@@ -1,0 +1,51 @@
+#ifndef NEXUS_PHYSICS_3D_RIGID_OBJECT_CAPSULE_HPP
+#define NEXUS_PHYSICS_3D_RIGID_OBJECT_CAPSULE_HPP
+
+#include "./nxRigidObject.hpp"
+#include "../../../shape/3D/nxCapsule.hpp"
+
+namespace nexus { namespace phys3D {
+
+    /**
+     * @brief Struct representing a capsule-shaped 3D physics object.
+     */
+    class NEXUS_API RigidCapsule : public RigidObject
+    {
+      public:
+        /**
+         * @brief Constructor for the RigidCapsule class.
+         * @param position Initial position of the capsule.
+         * @param rotation Initial rotation of the capsule.
+         * @param radius Radius of the capsule.
+         * @param height Height of the capsule.
+         * @param mass Mass of the capsule (0.0f for static capsules).
+         */
+        RigidCapsule(const math::Vec3& position,
+                     const math::Quaternion& rotation,
+                     float radius, float height,
+                     float mass = Static);
+
+        /**
+         * @brief Constructor for the RigidCapsule class using an AABB bounding box.
+         * @param bb AABB bounding box defining the capsule's dimensions.
+         * @param rotation Initial rotation of the capsule.
+         * @param mass Mass of the capsule (0.0f for static capsules).
+         */
+        RigidCapsule(const shape3D::AABB bb,
+                     const math::Quaternion& rotation = { 0, 0, 0, 1 },
+                     float mass = Static);
+
+        /**
+         * @brief Constructor for the RigidCapsule class using a capsule shape.
+         * @param capsule Capsule shape defining the capsule's dimensions.
+         * @param rotation Initial rotation of the capsule.
+         * @param mass Mass of the capsule (0.0f for static capsules).
+         */
+        RigidCapsule(const shape3D::Capsule& capsule,
+                     const math::Quaternion& rotation = { 0, 0, 0, 1 },
+                     float mass = Static);
+    };
+
+}}
+
+#endif //NEXUS_PHYSICS_3D_RIGID_OBJECT_CAPSULE_HPP

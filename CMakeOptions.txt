@@ -1,0 +1,37 @@
+include(EnumOption)
+
+# Define options for the PLATFORM
+enum_option(PLATFORM "Desktop;Android;" "Platform to build for.")
+
+# Define options for the GRAPHICS_API
+enum_option(GRAPHICS_API "OFF;ALL;SOFT;GL 1.1;GL 2.1;GL 3.3;GL 4.3;GL ES2;GL ES3" "Force a specific graphics API?")
+
+# Define options for the build type of 'nexus'
+option(NEXUS_BUILD_SHARED "Build type" ${NEXUS_IS_MAIN})
+
+# Option to build the examples
+option(NEXUS_BUILD_EXAMPLES "Build examples" ${NEXUS_IS_MAIN})
+
+# Option for optional supports
+option(SUPPORT_AUDIO "Optionnal support for audio" ${NEXUS_IS_MAIN})
+option(SUPPORT_MODEL "Optionnal support for meshes" ${NEXUS_IS_MAIN})
+option(SUPPORT_PHYSICS_2D "Optionnal support for 2D physics" ${NEXUS_IS_MAIN})
+option(SUPPORT_PHYSICS_3D "Optionnal support for 3D physics" ${NEXUS_IS_MAIN})
+option(SUPPORT_NETWORK "Optionnal support for network" ${NEXUS_IS_MAIN})
+
+# Option for 'nexus' feature extensions
+option(EXTENSION_CORE "Extension for nexus::core module" ${NEXUS_IS_MAIN})
+option(EXTENSION_GFX "Extension for nexus::gfx module" ${NEXUS_IS_MAIN})
+option(EXTENSION_2D "Extension 2D components for gfx and gapi modules" ${NEXUS_IS_MAIN})
+option(EXTENSION_3D "Extension 3D components for gapi modules" ${NEXUS_IS_MAIN})
+
+# Option for displaying logs in the console
+option(SHOW_LOG "Force display of logs in the console" ${NEXUS_IS_MAIN})
+
+# Adjustment of dependencies between supports and extensions
+if(SUPPORT_PHYSICS_3D)
+    set(SUPPORT_MODEL ON CACHE BOOL "Forced activation with 3D physics")
+endif()
+if(SUPPORT_MODEL AND GRAPHICS_API MATCHES "OFF")
+    set(GRAPHICS_API ON CACHE "GL 3.3" "Forced activation with model support without GAPI indicated")
+endif()

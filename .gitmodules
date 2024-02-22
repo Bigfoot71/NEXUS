@@ -1,0 +1,30 @@
+[submodule "external/sdl2"]
+	path = external/sdl2
+	url = https://github.com/libsdl-org/SDL
+[submodule "external/sdl2_image"]
+	path = external/sdl2_image
+	url = https://github.com/libsdl-org/SDL_image.git
+[submodule "external/sdl2_ttf"]
+	path = external/sdl2_ttf
+	url = https://github.com/libsdl-org/SDL_ttf.git
+[submodule "external/OpenAL"]
+	path = external/openal-soft
+	url = https://github.com/kcat/openal-soft.git
+[submodule "external/libsndfile"]
+	path = external/libsndfile
+	url = https://github.com/libsndfile/libsndfile.git
+[submodule "external/assimp"]
+	path = external/assimp
+	url = https://github.com/assimp/assimp.git
+[submodule "external/asio"]
+	path = external/asio
+	url = https://github.com/chriskohlhoff/asio.git
+[submodule "external/libsodium"]
+	path = external/libsodium
+	url = https://github.com/robinlinden/libsodium-cmake.git
+[submodule "external/box2d"]
+	path = external/box2d
+	url = https://github.com/erincatto/box2d.git
+[submodule "external/bullet3"]
+	path = external/bullet3
+	url = https://github.com/bulletphysics/bullet3.git

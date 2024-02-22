@@ -1,0 +1,19 @@
+include(source/core/CMakeLists.txt)
+include(source/audio/CMakeLists.txt)
+include(source/gfx/CMakeLists.txt)
+include(source/gapi/CMakeLists.txt)
+include(source/shape/CMakeLists.txt)
+include(source/phys/CMakeLists.txt)
+include(source/net/CMakeLists.txt)
+
+set(NEXUS_SOURCES
+    ${NEXUS_SOURCES_CORE}
+    ${NEXUS_SOURCES_AUDIO}
+    ${NEXUS_SOURCES_GRAPHICS}
+    ${NEXUS_SOURCES_GRAPHICS_API}
+    ${NEXUS_SOURCES_SHAPES}
+    ${NEXUS_SOURCES_PHYSICS_2D}
+    ${NEXUS_SOURCES_PHYSICS_3D}
+    ${NEXUS_SOURCES_NET}
+    source/nexus.cpp
+)

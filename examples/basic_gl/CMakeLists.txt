@@ -1,0 +1,25 @@
+cmake_minimum_required(VERSION 3.22.1)
+set(CMAKE_CXX_STANDARD 17)
+
+include_directories(include)
+link_libraries(nexus)
+
+add_executable(gl_multiple_contexts multiple_contexts.cpp)
+add_executable(gl_multiple_windows multiple_windows.cpp)
+add_executable(gl_texture_shader texture_shader.cpp)
+add_executable(gl_target_texture target_texture.cpp)
+add_executable(gl_primitives_2d primitives_2d.cpp)
+add_executable(gl_primitives_3d primitives_3d.cpp)
+add_executable(gl_sprite_batch sprite_batch.cpp)
+add_executable(gl_camera_2d camera_2d.cpp)
+add_executable(gl_camera_3d camera_3d.cpp)
+add_executable(gl_triangle triangle.cpp)
+add_executable(gl_font_3d font_3d.cpp)
+add_executable(gl_app app.cpp)
+
+if(SUPPORT_MODEL)
+    add_executable(gl_model_animation_3d model_animation_3d.cpp)
+    add_executable(gl_model_3d model_3d.cpp)
+endif()
+
+add_compile_definitions(RESOURCES_PATH="${CMAKE_CURRENT_SOURCE_DIR}/../resources/")
