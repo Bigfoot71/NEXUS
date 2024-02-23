@@ -8,7 +8,7 @@
 
 namespace _sr_impl {
 
-    class NEXUS_API TargetTexture : public nexus::sr::SoftContextual
+    class NEXUS_API TargetTexture : public nexus::sr::Contextual
     {
       private:
         nexus::sr::Framebuffer     framebuffer;
@@ -17,7 +17,7 @@ namespace _sr_impl {
 
       public:
         TargetTexture(nexus::sr::Context& ctx, int w, int h, nexus::gfx::PixelFormat format)
-        : nexus::sr::SoftContextual(ctx), framebuffer(w, h, format)
+        : nexus::sr::Contextual(ctx), framebuffer(w, h, format)
         { }
 
         /**

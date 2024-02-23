@@ -659,13 +659,13 @@ namespace nexus { namespace math {
         }
     };
 
-    // Classe spécifique pour les quaternions en précision double
+    // Specific class for quaternions in double precision
     using Quaternion = Vector4<double>;
 
-    // Classe spécifique pour les vecteurs 4D en virgule flottante
+    // Specific class for 4D floating point vectors
     using Vec4 = Vector4<float>;
 
-    // Classe spécifique pour les vecteurs 4D en entiers
+    // Specific class for 4D vectors in integers
     using IVec4 = Vector4<int>;
 
 

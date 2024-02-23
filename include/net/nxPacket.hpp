@@ -25,7 +25,7 @@ namespace nexus { namespace net {
     {
         T_Packet id{};
         Uint32 size = 0;
-        Uint8 nonce[crypto_secretbox_NONCEBYTES]; // Sert lors du chiffrement, de maniere à ce que deux paquets identiques ne donnent pas le même resultat
+        Uint8 nonce[crypto_secretbox_NONCEBYTES];   ///< Used during encryption, so that two identical packets do not give the same result
     };
 
     /**

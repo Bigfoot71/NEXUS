@@ -68,7 +68,7 @@ elseif ("${PLATFORM}" MATCHES "DRM")
     set(LIBS_PRIVATE ${GLESV2} ${EGL} ${DRM} ${GBM} m)
 endif ()
 
-# Ajout de GLAD dans les sources et inclusions externes de 'nexus' si nécéssaire
+# Addition of GLAD in sources and external inclusions of 'nexus' if necessary
 if(PLATFORM STREQUAL "Desktop")
     if(GRAPHICS_API STREQUAL "GL ES2" OR GRAPHICS_API STREQUAL "GL ES3")
         list(APPEND NEXUS_EXTERNAL_SOURCES ${NEXUS_ROOT_PATH}/external/glad/src/gles2.c)

@@ -1,4 +1,4 @@
-# Définition des options par défaut pour Assimp
+# Setting default options for Assimp
 set(ASSIMP_INJECT_DEBUG_POSTFIX OFF CACHE BOOL "")
 set(ASSIMP_WARNINGS_AS_ERRORS OFF CACHE BOOL "")
 set(ASSIMP_IGNORE_GIT_HASH ON CACHE BOOL "")
@@ -58,11 +58,11 @@ set(ASSIMP_BUILD_X3D_IMPORTER OFF CACHE BOOL "")
 set(ASSIMP_BUILD_3MF_IMPORTER OFF CACHE BOOL "")
 set(ASSIMP_BUILD_MMD_IMPORTER OFF CACHE BOOL "")
 
-# Configuration de la librairie Assimp
+# Configuring the Assimp library
 add_subdirectory(${NEXUS_ROOT_PATH}/external/assimp)
 
-# Ajout de la libairie Assimp dans la variable de liens
+# Adding the Assimp library to the links variable
 list(APPEND NEXUS_EXTERNAL_LIBS assimp)
 
-# Ajout du repertoire d'inclusion d'Assimp dans la variable des inclusions
+# Added the Assimp inclusion directory to the inclusions variable
 list(APPEND NEXUS_EXTERNAL_INCLUDES ${NEXUS_ROOT_PATH}/external/assimp/include)

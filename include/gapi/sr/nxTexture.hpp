@@ -16,46 +16,46 @@ namespace nexus { namespace sr {
 
 namespace _sr_impl {
 
-    class Texture : public nexus::sr::SoftContextual, public nexus::gfx::Surface
+    class Texture : public nexus::sr::Contextual, public nexus::gfx::Surface
     {
       public:
         Texture(nexus::sr::Context& ctx)
-        : nexus::sr::SoftContextual(ctx)
+        : nexus::sr::Contextual(ctx)
         , Surface(1, 1, nexus::gfx::White)
         { }
 
         Texture(nexus::sr::Context& ctx, SDL_Surface* sdlSurface, bool autoLifetimeManagement)
-        : nexus::sr::SoftContextual(ctx)
+        : nexus::sr::Contextual(ctx)
         , Surface(sdlSurface, autoLifetimeManagement)
         { }
 
         Texture(nexus::sr::Context& ctx, int width, int height, const nexus::gfx::Color& color, nexus::gfx::PixelFormat format)
-        : nexus::sr::SoftContextual(ctx)
+        : nexus::sr::Contextual(ctx)
         , Surface(width, height, color, format)
         { }
 
         Texture(nexus::sr::Context& ctx, const std::string& filePath)
-        : nexus::sr::SoftContextual(ctx)
+        : nexus::sr::Contextual(ctx)
         , Surface(filePath)
         { }
 
         Texture(nexus::sr::Context& ctx, const std::vector<Uint8>& data)
-        : nexus::sr::SoftContextual(ctx)
+        : nexus::sr::Contextual(ctx)
         , Surface(data)
         { }
 
         Texture(nexus::sr::Context& ctx, const std::vector<Uint8>& data, nexus::core::ImageFormat format)
-        : nexus::sr::SoftContextual(ctx)
+        : nexus::sr::Contextual(ctx)
         , Surface(data, format)
         { }
 
         Texture(nexus::sr::Context& ctx, const void* data, size_t size)
-        : nexus::sr::SoftContextual(ctx)
+        : nexus::sr::Contextual(ctx)
         , Surface(data, size)
         { }
 
         Texture(nexus::sr::Context& ctx, const void* data, size_t size, nexus::core::ImageFormat format)
-        : nexus::sr::SoftContextual(ctx)
+        : nexus::sr::Contextual(ctx)
         , Surface(data, size, format)
         { }
 
@@ -309,7 +309,7 @@ namespace nexus { namespace sr {
          *
          * This operator allows implicit conversion to a non-const pointer to the gfx::Surface
          * encapsulated by the Texture. It returns the underlying pointer obtained from the
-         * SoftContextual (obj) using the get() method.
+         * Contextual (obj) using the get() method.
          *
          * @return A non-const pointer to the encapsulated gfx::Surface.
          */
@@ -320,7 +320,7 @@ namespace nexus { namespace sr {
          *
          * This operator allows implicit conversion to a const pointer to the gfx::Surface
          * encapsulated by the Texture. It returns the underlying pointer obtained from the
-         * SoftContextual (obj) using the get() method.
+         * Contextual (obj) using the get() method.
          *
          * @return A const pointer to the encapsulated gfx::Surface.
          */
@@ -331,7 +331,7 @@ namespace nexus { namespace sr {
          *
          * This operator allows implicit conversion to a non-const reference to the gfx::Surface
          * encapsulated by the Texture. It returns a reference to the underlying gfx::Surface
-         * obtained by dereferencing the SoftContextual (obj) pointer.
+         * obtained by dereferencing the Contextual (obj) pointer.
          *
          * @return A non-const reference to the encapsulated gfx::Surface.
          */
@@ -342,7 +342,7 @@ namespace nexus { namespace sr {
          *
          * This operator allows implicit conversion to a const reference to the gfx::Surface
          * encapsulated by the Texture. It returns a const reference to the underlying gfx::Surface
-         * obtained by dereferencing the SoftContextual (obj) pointer.
+         * obtained by dereferencing the Contextual (obj) pointer.
          *
          * @return A const reference to the encapsulated gfx::Surface.
          */

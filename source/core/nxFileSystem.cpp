@@ -23,7 +23,7 @@ std::string core::GetFileExtension(const std::string& filePath)
     {
         std::string extension = filePath.substr(lastDotPos + 1);
 
-        // Convertir l'extension en minuscules
+        // Convert extension to lowercase
         std::transform(extension.begin(), extension.end(), extension.begin(), ::tolower);
         
         return extension;
@@ -144,15 +144,15 @@ std::vector<Uint8> core::LoadRawFile(const std::string& filePath)
 
     if (file)
     {
-        // Détermine la taille du fichier
+        // Determines the file size
         file.seekg(0, std::ios::end);
         std::streampos fileSize = file.tellg();
         file.seekg(0, std::ios::beg);
 
-        // Réserve de la mémoire pour le vecteur en fonction de la taille du fichier
+        // Memory reserve for vector depending on file size
         data.resize(static_cast<size_t>(fileSize));
 
-        // Lire les données brutes du fichier dans le vecteur
+        // Read raw data from file into vector
         file.read(reinterpret_cast<char*>(data.data()), fileSize);
 
         file.close();

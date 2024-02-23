@@ -15,70 +15,70 @@ if("${CMAKE_SOURCE_DIR}" STREQUAL "${NEXUS_ROOT_PATH}")
     set(NEXUS_IS_MAIN TRUE)
 endif()
 
-# Defini le repertoire des modules CMake
+# Defined the CMake modules directory
 set(CMAKE_MODULE_PATH ${NEXUS_ROOT_PATH}/cmake)
 
-# Prédefinition de la variable des definitions de 'nexus'
+# Predefining the variable for 'nexus' definitions
 set(NEXUS_DEFINITIONS       "")
 
-# Prédefinition des variables de sources/inclusions/liens externes
-# Elles seront mis à jour par les modules de configuration cmake
+# Predefining source/inclusion/external link variables
+# They will be updated by the cmake configuration modules
 set(NEXUS_EXTERNAL_LIBS         "")
 set(NEXUS_EXTERNAL_SOURCES      "")
 set(NEXUS_EXTERNAL_INCLUDES     "")
 set(NEXUS_EXTERNAL_DEFINITIONS  "")
 
-# Recuperation des options de configuration
+# Recovery of configuration options
 include(CMakeOptions.txt)
 
-# Configuration selon la plateforme cible
+# Configuration according to the target platform
 include(config_library/Platform)
 
-# Configuration de l'API graphique souhaitée
+# Configuring the desired graphics API
 include(config_library/GraphicsAPI)
 
-# Configuration des definitions de 'nexus'
+# Configuring 'nexus' definitions
 include(config_library/Definitions)
 
-# Configuration de 'SDL2'
+# Configuring 'SDL2'
 include(config_external/SDL2)
 
-# Configuration de 'OpenGL'
+# Configuring 'OpenGL'
 if(SUPPORT_OPENGL)
     include(config_external/OpenGL)
 endif()
 
-# Configuration de 'OpenAL' et de 'libsdnfile'
+# Configuring 'OpenAL' and 'libsdnfile'
 if(SUPPORT_AUDIO)
     include(config_external/OpenAL)
     include(config_external/LibsndFile)
 endif()
 
-# Configuration de 'assimp'
+# Configuring 'assimp'
 if(SUPPORT_MODEL)
     include(config_external/Assimp)
 endif()
 
-# Configuration de 'box2d'
+# Configuring 'box2d'
 if(SUPPORT_PHYSICS_2D)
     include(config_external/Box2D)
 endif()
 
-# Configuration de 'bullet3'
+# Configuring 'bullet3'
 if(SUPPORT_PHYSICS_3D)
     include(config_external/Bullet3)
 endif()
 
-# Configuration de 'asio' et 'libsodium'
+# Configuring 'asio' and 'libsodium'
 if(SUPPORT_NETWORK)
     include(config_external/ASIO)
     include(config_external/Libsodium)
 endif()
 
-# Recuperation des sources de 'nexus'
+# Recovery of 'nexus' sources
 include(${NEXUS_ROOT_PATH}/source/CMakeLists.txt)
 
-# Configure la librairie principal 'nexus'
+# Configure the main 'nexus' library
 if(NEXUS_BUILD_SHARED)
     add_library(${PROJECT_NAME} SHARED
         ${NEXUS_SOURCES} ${NEXUS_EXTERNAL_SOURCES})
@@ -87,21 +87,21 @@ else()
         ${NEXUS_SOURCES} ${NEXUS_EXTERNAL_SOURCES})
 endif()
 
-# Inclusions principale et external pour 'nexus'
+# Main and external inclusions for 'nexus'
 target_include_directories(${PROJECT_NAME} PUBLIC
     ${NEXUS_ROOT_PATH}/include ${NEXUS_EXTERNAL_INCLUDES}
 )
 
-# Definitions pour 'nexus'
+# Definitions for 'nexus'
 target_compile_definitions(${PROJECT_NAME} PUBLIC
     ${NEXUS_DEFINITIONS} ${NEXUS_EXTERNAL_DEFINITIONS})
 
-# Liaisons des dépendances de 'nexus'
+# Bindings of 'nexus' dependencies
 target_link_libraries(${PROJECT_NAME} PUBLIC
     ${NEXUS_EXTERNAL_LIBS}
 )
 
-# Configuration des exemples
+# Configuring the samples
 if (NEXUS_BUILD_EXAMPLES)
     add_subdirectory(${NEXUS_ROOT_PATH}/examples/basic)
     if(SUPPORT_AUDIO)

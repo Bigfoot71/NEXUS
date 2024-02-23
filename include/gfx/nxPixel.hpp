@@ -74,9 +74,9 @@ namespace nexus { namespace gfx {
     {
         Uint32 rMask, gMask, bMask, aMask;
 
-        int bpp     = 0;    // Bits par pixels
-        int depth   = 0;    // Profondeur en bits
-        int pitch   = 0;    // Espacement des pixels en octets
+        int bpp     = 0;    // Bits per pixel
+        int depth   = 0;    // Depth in bits
+        int pitch   = 0;    // Pixel spacing in bytes
 
         PixelInfo(PixelFormat format, Uint32 imageWidth = 0)
         {

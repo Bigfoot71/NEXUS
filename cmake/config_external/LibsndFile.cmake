@@ -1,12 +1,12 @@
-# Définition des options par défaut pour LibsndFile
+# Setting default options for LibsndFile
 set(BUILD_PROGRAMS OFF CACHE BOOL "Disable build libsndfile programs")
 set(BUILD_EXAMPLES OFF CACHE BOOL "Disable build libsndfile examples")
 
-# Configuration de la librairie LibsndFile
+# Configuring the LibsndFile library
 add_subdirectory(${NEXUS_ROOT_PATH}/external/libsndfile)
 
-# Ajout de la libairie LibsndFile dans la variable de liens
+# Adding the LibsndFile library to the links variable
 list(APPEND NEXUS_EXTERNAL_LIBS sndfile)
 
-# Ajout du repertoire d'inclusion de LibsndFile dans la variables des inclusions
+# Added the LibsndFile inclusion directory to the inclusion variables
 list(APPEND NEXUS_EXTERNAL_INCLUDES ${NEXUS_ROOT_PATH}/external/libsndfile/include)

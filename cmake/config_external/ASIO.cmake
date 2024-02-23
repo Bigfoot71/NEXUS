@@ -1,13 +1,13 @@
-# Ajout de liens dont depend ASIO dans la variable de liens
+# Adding links that depend on ASIO in the links variable
 if(UNIX)
     list(APPEND NEXUS_EXTERNAL_LIBS pthread)
 elseif(WIN32 AND ${PLATFORM} STREQUAL "Desktop")
     list(APPEND NEXUS_EXTERNAL_LIBS ws2_32 wsock32)
 endif()
 
-# Ajout des definitions pour ASIO
+# Added definitions for ASIO
 list(APPEND ${NEXUS_EXTERNAL_DEFINITIONS}
     ASIO_STANDALONE ASIO_NO_DEPRECATED)
 
-# Ajout du repertoire d'inclusion d'ASIO dans la variable des inclusions
+# Added ASIO inclusion directory to the inclusions variable
 list(APPEND NEXUS_EXTERNAL_INCLUDES ${NEXUS_ROOT_PATH}/external/asio/asio/include)

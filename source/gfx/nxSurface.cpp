@@ -294,13 +294,13 @@ void gfx::Surface::SetBlendMode(BlendMode blendMode) const
 
 void gfx::Surface::CopyFrom(const Surface& source)
 {
-    // Vérifie que la source n'est pas la même que la surface actuelle
+    // Checks that the source is not the same as the current surface
     if (&source == this) return;
 
-    // Copiez les attributs de la source
+    // Copy source attributes
     if (source.surface)
     {
-        Destroy();  // Libérez la surface actuelle s'il y en a une
+        Destroy();  // Free the current surface if there is one
         surface = SDL_ConvertSurface(source.surface, source.surface->format, source.surface->flags);
         if (!surface) throw core::NexusException("gfx::Surface", "Error copying surface.",
             "SDL", SDL_GetError());

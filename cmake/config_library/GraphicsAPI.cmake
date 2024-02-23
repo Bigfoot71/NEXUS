@@ -1,4 +1,4 @@
-# Définition de la variable en fonction de GRAPHICS_API
+# Setting the variable based on GRAPHICS_API
 set(GRAPHICS_API_DEFINITIONS)
 
 if(${GRAPHICS_API} STREQUAL "OFF")
@@ -35,11 +35,11 @@ elseif(${GRAPHICS_API} STREQUAL "GL ES3")
 
 endif()
 
-# Pré-définition des indicateur d'utilisation d'API graphique
+# Pre-defining graph API usage indicators
 set(SUPPORT_SOFTWARE_RASTERIZER OFF)
 set(SUPPORT_OPENGL OFF)
 
-# Detection du type d'API graphique utilisé
+# Detection of the type of graphics API used
 if (${GRAPHICS_API} STREQUAL "ALL")
     set(SUPPORT_SOFTWARE_RASTERIZER ON)
     set(SUPPORT_OPENGL ON)
@@ -52,7 +52,7 @@ elseif(GRAPHICS_API MATCHES ".*GL.*")
 
 endif()
 
-# Application du type d'API graphique en tant que definition
+# Applying the Graph API type as a definition
 if (SUPPORT_SOFTWARE_RASTERIZER)
     add_compile_definitions(SUPPORT_SOFTWARE_RASTERIZER)
 endif()

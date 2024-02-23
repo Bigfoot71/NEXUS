@@ -14,25 +14,42 @@
 
 namespace _sr_impl {
 
+    /**
+     * @brief Alias for Material type using Software Rasterizer specific types.
+     */
     using Material = _gapi_impl::Material<nexus::sr::Context, nexus::sr::Shader, nexus::sr::Texture>;
 
 }
 
 namespace nexus { namespace sr {
 
+    /**
+     * @brief Represents a material in Software Rasterizer rendering.
+     *
+     * The Material class encapsulates functionality related to SR materials,
+     * including textures and shaders.
+     */
     class NEXUS_API Material : public Container<_sr_impl::Material>
     {
       public:
-        static constexpr auto MapCount = _sr_impl::Material::MapCount;
-        using MapType = _sr_impl::Material::MapType;
+        static constexpr auto MapCount = _sr_impl::Material::MapCount;    ///< Number of texture maps.
+        using MapType = _sr_impl::Material::MapType;                      ///< Type of texture maps.
 
       public:
-        // Constructeur pour le Material par defaut (texture et shader par defaut)
+        /**
+         * @brief Default constructor for Material.
+         * @param ctx The Rasterizer context.
+         */
         Material(nexus::sr::Context& ctx)
         : Container<_sr_impl::Material>(ctx)
         { }
 
-        // Constructeur de chargement du material depuis les données chargées par Assimp
+        /**
+         * @brief Constructor for Material loading from Assimp data.
+         * @param ctx The Rasterizer context.
+         * @param material Pointer to the Assimp material data.
+         * @param scene Pointer to the Assimp scene data.
+         */
         Material(nexus::sr::Context& ctx, const aiMaterial* material, const aiScene* scene)
         : Container<_sr_impl::Material>(ctx, material, scene)
         { }

@@ -45,7 +45,7 @@ bool shape3D::AABB::CollisionSphere(const nexus::shape3D::Sphere& sphere) const
 
 bool shape3D::AABB::CollisionCapsule(const nexus::shape3D::Capsule& capsule) const
 {
-    // Vérifier l'intersection avec les sphères de la capsule
+    // Check the intersection with the capsule spheres
     nexus::shape3D::Sphere sphere1(capsule.start, capsule.radius);
     nexus::shape3D::Sphere sphere2(capsule.end, capsule.radius);
 
@@ -54,7 +54,7 @@ bool shape3D::AABB::CollisionCapsule(const nexus::shape3D::Capsule& capsule) con
         return false;
     }
 
-    // Vérifier l'intersection avec le cylindre de la capsule
+    // Check the intersection with the capsule cylinder
     float minX = std::min(min.x, max.x);
     float maxX = std::max(min.x, max.x);
     float minZ = std::min(min.z, max.z);
@@ -116,7 +116,7 @@ shape3D::RayCollision shape3D::AABB::CollisionLine(const nexus::shape3D::Line& l
 
 bool shape3D::AABB::CollisionMesh(const nexus::shape3D::Mesh& mesh, const math::Mat4& transform) const
 {
-    // Calcul des demi-longueurs du AABB
+    // Calculation of half lengths of AABB
     const math::Vec3 halfLengths = (max - min) * 0.5f;
 
     for (Uint32 i = 0; i < mesh.vertices.size(); i += 3)
@@ -136,17 +136,17 @@ bool shape3D::AABB::CollisionMesh(const nexus::shape3D::Mesh& mesh, const math::
             v2 = mesh.vertices[i + 2].Transformed(transform);
         }
 
-        // Boucle sur les différents axes de séparation
+        // Loop on the different separation axes
         for (Uint8 axis = 0; axis < 3; axis++)
         {
-            // Calcul de la "radius" projetée sur l'axe
+            // Calculation of the "radius" projected on the axis
             const float r = halfLengths[axis] * std::abs(v0[axis]);
 
-            // Projection des triangles sur l'axe
+            // Projection of triangles on the axis
             const float p0 = v0[(axis + 1) % 3] * v1[(axis + 2) % 3] - v0[(axis + 2) % 3] * v1[(axis + 1) % 3];
             const float p2 = (v1[(axis + 1) % 3] - v0[(axis + 1) % 3]) * v2[(axis + 2) % 3] - (v1[(axis + 2) % 3] - v0[(axis + 2) % 3]) * v2[(axis + 1) % 3];
 
-            // Test de séparation sur l'axe
+            // On-axis separation test
             if (std::min(p0, p2) > r || std::max(p0, p2) < -r)
             {
                 return false;

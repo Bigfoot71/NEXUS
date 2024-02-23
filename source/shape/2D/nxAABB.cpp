@@ -45,16 +45,16 @@ bool shape2D::AABB::CollisionMesh(const Mesh& mesh) const
 
 bool shape2D::AABB::CollisionCircle(const Circle& circle) const
 {
-    // Calculer le point le plus proche du centre du cercle à l'intérieur de l'AABB
+    // Calculate the point closest to the center of the circle inside the AABB
     float closestX = std::clamp(circle.center.x, min.x, max.x);
     float closestY = std::clamp(circle.center.y, min.y, max.y);
 
-    // Calculer la distance entre le point le plus proche et le centre du cercle
+    // Calculate the distance between the closest point and the center of the circle
     float distanceX = circle.center.x - closestX;
     float distanceY = circle.center.y - closestY;
     float distanceSquared = distanceX * distanceX + distanceY * distanceY;
 
-    // Collision si la distance au carré est inférieure ou égale au carré du rayon du cercle
+    // Collision if the distance squared is less than or equal to the square of the radius of the circle
     return distanceSquared <= (circle.radius * circle.radius);
 }
 

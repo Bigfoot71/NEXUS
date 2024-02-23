@@ -1,4 +1,4 @@
-# Définition des options par défaut pour OpenAL
+# Setting default options for OpenAL
 set(ALSOFT_TESTS OFF CACHE BOOL "Disable build and install test programs")
 set(ALSOFT_UTILS OFF CACHE BOOL "Disable build and install utility programs")
 set(ALSOFT_EXAMPLES OFF CACHE BOOL "Disable build and install example programs")
@@ -9,14 +9,14 @@ set(ALSOFT_INSTALL_AMBDEC_PRESETS OFF CACHE BOOL "Disable install AmbDec preset 
 set(ALSOFT_INSTALL_HRTF_DATA OFF CACHE BOOL "Disable install HRTF definition files")
 set(ALSOFT_INSTALL OFF CACHE BOOL "Disable install headers and libraries")
 
-# Configuration de la librairie OpenAL
+# Configuring the OpenAL library
 add_subdirectory(${NEXUS_ROOT_PATH}/external/openal-soft)
 
-# Ajout de la libairie OpenAL dans la variable de liens
+# Adding the OpenAL library to the links variable
 list(APPEND NEXUS_EXTERNAL_LIBS OpenAL)
 
-# Ajout du repertoire d'inclusion d'OpenAL dans la variables des inclusions
+# Added the OpenAL inclusion directory to the inclusion variables
 list(APPEND NEXUS_EXTERNAL_INCLUDES ${NEXUS_ROOT_PATH}/external/openal-soft/include)
 
-# Ajout des defintions pour OpenAL
+# Added definitions for OpenAL
 list(APPEND NEXUS_EXTERNAL_DEFINITIONS AL_ALEXT_PROTOTYPES)

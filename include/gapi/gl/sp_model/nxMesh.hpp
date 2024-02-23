@@ -256,15 +256,15 @@ namespace nexus { namespace gl {
 
       public:
         /**
-        * @brief Constructor reserved for gl::Model.
-        *
-        * @note: Cannot be private currently because used via std::vector::emplace_back(...) in gl::Model
-        *
-        * @param ctx The OpenGL context.
-        * @param mesh Pointer to the Assimp mesh data.
-        * @param boneIDMap The map of bone IDs.
-        * @param boneInfos Vector containing bone information.
-        */
+         * @brief Constructor reserved for gl::Model.
+         *
+         * @note: Cannot be private currently because used via std::vector::emplace_back(...) in gl::Model
+         *
+         * @param ctx The OpenGL context.
+         * @param mesh Pointer to the Assimp mesh data.
+         * @param boneIDMap The map of bone IDs.
+         * @param boneInfos Vector containing bone information.
+         */
         Mesh(Context& ctx, const aiMesh* mesh, std::unordered_map<std::string, int>& boneIDMap, std::vector<_gapi_impl::BoneInfo>& boneInfos)
         : Container(ctx, mesh, boneIDMap, boneInfos)
         { }

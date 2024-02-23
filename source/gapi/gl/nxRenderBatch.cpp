@@ -275,8 +275,8 @@ gl::RenderBatch& gl::RenderBatch::operator=(RenderBatch&& other) noexcept
     return *this;
 }
 
-// La fonction retourne vrai si la limite de sommets du lot a été atteinte, sinon retourne faux
-// La fonction gère aussi le cas où la limite est atteinte en effectuant le rendu du lot
+// The function returns true if the batch vertex limit has been reached, otherwise returns false
+// The function also handles the case where the limit is reached by rendering the batch
 bool gl::RenderBatch::CheckLimit(int requiredVertices)
 {
     if (vertexBuffer[currentBuffer].CanAddVertices(requiredVertices))

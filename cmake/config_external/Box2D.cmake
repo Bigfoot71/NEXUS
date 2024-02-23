@@ -1,7 +1,7 @@
-# Defini le repertoire racine de Box2D
+# Define the Box2D root directory
 set(BOX2D_ROOT_PATH ${NEXUS_ROOT_PATH}/external/box2d)
 
-# Liste tous les fichiers source de Box2D
+# List all Box2D source files
 set(BOX2D_SOURCE_FILES
     ${BOX2D_ROOT_PATH}/src/collision/b2_broad_phase.cpp
     ${BOX2D_ROOT_PATH}/src/collision/b2_chain_shape.cpp
@@ -58,8 +58,8 @@ set(BOX2D_SOURCE_FILES
     ${BOX2D_ROOT_PATH}/src/dynamics/b2_world_callbacks.cpp
     ${BOX2D_ROOT_PATH}/src/rope/b2_rope.cpp)
 
-# Ajout des sources de Box2D aux sources exertnes de 'nexus'
+# Adding Box2D sources to the exertne 'nexus' sources
 list(APPEND NEXUS_EXTERNAL_SOURCES ${BOX2D_SOURCE_FILES})
 
-# Ajout du repertoire d'inclusion de Box2D dans la variable des inclusions
+# Adding the Box2D inclusion directory to the inclusions variable
 list(APPEND NEXUS_EXTERNAL_INCLUDES ${BOX2D_ROOT_PATH}/include)
