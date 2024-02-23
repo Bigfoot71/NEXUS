@@ -23,7 +23,7 @@
 #include "../platform/nxPlatform.hpp"
 #include "../core/nxLog.hpp"
 
-#ifdef SUPPORT_MODEL
+#if SUPPORT_MODEL
 #   include "assimp/matrix4x4.h"
 #endif
 
@@ -77,7 +77,7 @@ namespace nexus { namespace math {
                     float m2, float m6, float m10, float m14,
                     float m3, float m7, float m11, float m15);
 
-#       ifdef SUPPORT_MODEL
+#       if SUPPORT_MODEL
 
         /**
          * @brief Constructor from an aiMatrix4x4

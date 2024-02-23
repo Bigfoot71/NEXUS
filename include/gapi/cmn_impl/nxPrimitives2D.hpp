@@ -35,11 +35,11 @@
 #include "./nxContext.hpp"
 #include <type_traits>
 
-#ifdef SUPPORT_OPENGL
+#if SUPPORT_OPENGL
 #   include "../gl/nxTexture.hpp"
 #endif
 
-#ifdef SUPPORT_SOFTWARE_RASTERIZER
+#if SUPPORT_SOFTWARE_RASTERIZER
 #   include "../sr/nxTexture.hpp"
 #endif
 

@@ -22,7 +22,7 @@
 
 #include "../platform/nxPlatform.hpp"
 
-#ifdef SUPPORT_PHYSICS_2D
+#if SUPPORT_PHYSICS_2D
 #   include <box2d/b2_math.h>
 #endif
 
@@ -102,7 +102,7 @@ namespace nexus { namespace math {
         : x(p.x), y(p.y)
         { }
 
-#       ifdef SUPPORT_PHYSICS_2D
+#       if SUPPORT_PHYSICS_2D
 
         /**
          * @brief Constructor initializing the vector from a b2Vec2 (Box2D vector).

@@ -27,11 +27,11 @@
 #include "./nxClock.hpp"
 #include "./nxState.hpp"
 
-#ifdef SUPPORT_AUDIO
+#if SUPPORT_AUDIO
 #   include "../audio/nxDevice.hpp"
 #endif
 
-#ifdef EXTENSION_CORE
+#if EXTENSION_CORE
 #   include "./ext_core/nxSaveManager.hpp"
 #   include "./ext_core/nxAssetManager.hpp"
 #endif
@@ -78,12 +78,12 @@ namespace _core_impl {
         nexus::core::Clock clock;
 
       public:
-    #ifdef SUPPORT_AUDIO
+    #if SUPPORT_AUDIO
         nexus::audio::Device audio;                                ///< AudioDevice instance for the application.
     #endif
 
       public:
-    #ifdef EXTENSION_CORE
+    #if EXTENSION_CORE
         nexus::core::AssetManager assetManager;                    ///< Basic generic asset manager.
         std::unique_ptr<nexus::core::SaveManager> saveManager;     ///< Basic generic save manager (optional).
     #endif
@@ -115,7 +115,7 @@ namespace _core_impl {
          */
         virtual ~App() = default;
 
-    #ifdef EXTENSION_CORE
+    #if EXTENSION_CORE
 
         /**
          * @brief Initializes the SaveManager with the specified parameters.
@@ -253,12 +253,12 @@ namespace _core_impl {
     template <typename T_App, typename T_Window>
     App<T_App, T_Window>::App(const std::string& appTitle, int winWidth, int winHeight, nexus::core::WindowFlag winFlags)
     : window(appTitle, winWidth, winHeight, winFlags)
-    #ifdef SUPPORT_AUDIO
+    #if SUPPORT_AUDIO
     , audio()
     #endif
     { }
 
-    #ifdef EXTENSION_CORE
+    #if EXTENSION_CORE
     template <typename T_App, typename T_Window>
     template <typename _Ts>
     void App<T_App, T_Window>::InitSaveManager(const _Ts& origin, int version, const std::string& directory)

@@ -32,7 +32,7 @@
 #include "core/nxException.hpp"
 #include "core/nxFileFormat.hpp"
 #include "core/nxFileSystem.hpp"
-#ifdef EXTENSION_CORE
+#if EXTENSION_CORE
 #   include "core/ext_core/nxAssetManager.hpp"
 #   include "core/ext_core/nxSaveManager.hpp"
 #endif
@@ -42,7 +42,7 @@
 #include "gfx/nxColor.hpp"
 #include "gfx/nxSurface.hpp"
 #include "gfx/nxBasicFont.hpp"
-#ifdef EXTENSION_GFX
+#if EXTENSION_GFX
 #   include "gfx/ext_gfx/nxApp.hpp"
 #   include "gfx/ext_gfx/nxFont.hpp"
 #   include "gfx/ext_gfx/nxTexture.hpp"
@@ -50,14 +50,14 @@
 #   include "gfx/ext_gfx/nxTargetTexture.hpp"
 #   include "gfx/ext_gfx/nxVertexRenderer.hpp"
 #   include "gfx/ext_gfx/nxStreamingTexture.hpp"
-#   ifdef EXTENSION_2D
+#   if EXTENSION_2D
 #       include "gfx/ext_gfx/ext_2D/nxParticles.hpp"
 #       include "gfx/ext_gfx/ext_2D/nxSprite.hpp"
 #   endif
 #endif
 
 // graphics-api
-#ifdef SUPPORT_OPENGL
+#if SUPPORT_OPENGL
 #   include "gapi/gl/nxApp.hpp"
 #   include "gapi/gl/nxFont.hpp"
 #   include "gapi/gl/nxUtils.hpp"
@@ -75,25 +75,25 @@
 #   include "gapi/gl/nxPrimitives2D.hpp"
 #   include "gapi/gl/nxPrimitives3D.hpp"
 #   include "gapi/gl/nxTargetTexture.hpp"
-#   ifdef SUPPORT_MODEL
+#   if SUPPORT_MODEL
 #       include "gapi/gl/sp_model/nxMaterial.hpp"
 #       include "gapi/gl/sp_model/nxModel.hpp"
 #       include "gapi/gl/sp_model/nxMesh.hpp"
 #   endif
-#   ifdef EXTENSION_2D
+#   if EXTENSION_2D
 #       include "gapi/gl/ext_2D/nxParticles2D.hpp"
 #       include "gapi/gl/ext_2D/nxSprite2D.hpp"
 #   endif
-#   if defined(EXTENSION_3D)
+#   if EXTENSION_3D
 #       include "gapi/gl/ext_3D/nxParticles3D.hpp"
 #       include "gapi/gl/ext_3D/nxSprite3D.hpp"
-#       if defined(SUPPORT_MODEL) && !defined(GRAPHICS_API_OPENGL_11)
+#       if SUPPORT_MODEL and not GRAPHICS_API_OPENGL_11
 #           include "gapi/gl/ext_3D/nxLights3D.hpp"
 #           include "gapi/gl/ext_3D/nxSkybox.hpp"
 #       endif
 #   endif
 #endif
-#ifdef SUPPORT_SOFTWARE_RASTERIZER
+#if SUPPORT_SOFTWARE_RASTERIZER
 #   include "gapi/sr/nxApp.hpp"
 #   include "gapi/sr/nxFont.hpp"
 #   include "gapi/sr/nxEnums.hpp"
@@ -108,7 +108,7 @@
 #   include "gapi/sr/nxPrimitives2D.hpp"
 #   include "gapi/sr/nxPrimitives3D.hpp"
 #   include "gapi/sr/nxTargetTexture.hpp"
-#   ifdef SUPPORT_MODEL
+#   if SUPPORT_MODEL
 #       include "gapi/sr/sp_model/nxMaterial.hpp"
 #       include "gapi/sr/sp_model/nxModel.hpp"
 #       include "gapi/sr/sp_model/nxMesh.hpp"
@@ -116,7 +116,7 @@
 #endif
 
 // audio
-#ifdef SUPPORT_AUDIO
+#if SUPPORT_AUDIO
 #   include "audio/nxDevice.hpp"
 #   include "audio/nxEffect.hpp"
 #   include "audio/nxSource.hpp"
@@ -163,14 +163,14 @@
 #include "shape/3D/nxCylinder.hpp"
 
 // physics 2D
-#ifdef SUPPORT_PHYSICS_2D
+#if SUPPORT_PHYSICS_2D
 #   include "phys/2D/nxPhysics.hpp"
 #   include "phys/2D/nxDrawing.hpp"
 #   include "phys/2D/nxShapes.hpp"
 #endif
 
 // physics 3D
-#ifdef SUPPORT_PHYSICS_3D
+#if SUPPORT_PHYSICS_3D
 #   include "phys/3D/rigid_objects/nxRigidCapsule.hpp"
 #   include "phys/3D/rigid_objects/nxRigidSphere.hpp"
 #   include "phys/3D/rigid_objects/nxRigidModel.hpp"
@@ -180,7 +180,7 @@
 #endif
 
 // network
-#ifdef SUPPORT_NETWORK
+#if SUPPORT_NETWORK
 #   include "net/nxClientInterface.hpp"
 #   include "net/nxServerInterface.hpp"
 #   include "net/nxConnection.hpp"

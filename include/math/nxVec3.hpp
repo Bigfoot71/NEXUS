@@ -20,15 +20,15 @@
 #ifndef NEXUS_MATH_VEC3_HPP
 #define NEXUS_MATH_VEC3_HPP
 
-#ifdef SUPPORT_MODEL
+#if SUPPORT_MODEL
 #   include <assimp/vector3.h>
 #endif
 
-#ifdef SUPPORT_PHYSICS_2D
+#if SUPPORT_PHYSICS_2D
 #   include <box2d/b2_math.h>
 #endif
 
-#ifdef SUPPORT_PHYSICS_3D
+#if SUPPORT_PHYSICS_3D
 #   include <LinearMath/btVector3.h>
 #endif
 
@@ -100,7 +100,7 @@ namespace nexus { namespace math {
         : x(vec2.x), y(vec2.y), z(z)
         { }
 
-#       ifdef SUPPORT_MODEL
+#       if SUPPORT_MODEL
 
         /**
          * @brief Constructor initializing a Vector3 from an aiVector3D.
@@ -124,7 +124,7 @@ namespace nexus { namespace math {
 
 #       endif
 
-#       ifdef SUPPORT_PHYSICS_2D
+#       if SUPPORT_PHYSICS_2D
 
         /**
          * @brief Constructor initializing the vector from a b2Vec3 (Box2D vector).
@@ -146,7 +146,7 @@ namespace nexus { namespace math {
 
 #       endif
 
-#       ifdef SUPPORT_PHYSICS_3D
+#       if SUPPORT_PHYSICS_3D
 
         /**
          * @brief Constructor initializing the vector from a btVector3 (Bullet Physics vector).

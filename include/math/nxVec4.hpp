@@ -20,11 +20,11 @@
 #ifndef NEXUS_MATH_VEC4_HPP
 #define NEXUS_MATH_VEC4_HPP
 
-#ifdef SUPPORT_MODEL
+#if SUPPORT_MODEL
 #   include <assimp/quaternion.h>
 #endif
 
-#ifdef SUPPORT_PHYSICS_3D
+#if SUPPORT_PHYSICS_3D
 #   include <LinearMath/btQuaternion.h>
 #endif
 
@@ -81,7 +81,7 @@ namespace nexus { namespace math {
         : x(vec3.x), y(vec3.y), z(vec3.z), w(w)
         { }
 
-#       ifdef SUPPORT_MODEL
+#       if SUPPORT_MODEL
 
         /**
          * @brief Constructor initializing a Vector4 from an aiQuaternion.
@@ -110,7 +110,7 @@ namespace nexus { namespace math {
 
 #       endif
 
-#       ifdef SUPPORT_PHYSICS_3D
+#       if SUPPORT_PHYSICS_3D
 
         /**
          * @brief Constructs a Vector4 from a btVector4.

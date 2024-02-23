@@ -22,7 +22,7 @@
 using namespace nexus;
 
 
-#ifdef EXTENSION_GFX
+#if EXTENSION_GFX
 
 #   include "gfx/ext_gfx/nxRenderer.hpp"
 
@@ -123,7 +123,7 @@ using namespace nexus;
 #endif
 
 
-#ifdef SUPPORT_OPENGL
+#if SUPPORT_OPENGL
 
 #   include "gapi/gl/nxPrimitives2D.hpp"
 
@@ -220,7 +220,7 @@ using namespace nexus;
 #endif
 
 
-#ifdef SUPPORT_SOFTWARE_RASTERIZER
+#if SUPPORT_SOFTWARE_RASTERIZER
 
 #   include "gapi/sr/nxPrimitives2D.hpp"
 
