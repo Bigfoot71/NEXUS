@@ -1,7 +1,7 @@
 # Adding links that depend on ASIO in the links variable
 if(UNIX)
     list(APPEND NEXUS_EXTERNAL_LIBS pthread)
-elseif(WIN32 AND ${PLATFORM} STREQUAL "Desktop")
+elseif(WIN32 AND ${NEXUS_PLATFORM} STREQUAL "Desktop")
     list(APPEND NEXUS_EXTERNAL_LIBS ws2_32 wsock32)
 endif()
 

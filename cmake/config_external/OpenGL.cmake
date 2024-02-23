@@ -5,8 +5,8 @@ if(POLICY CMP0072)
   cmake_policy(SET CMP0072 NEW)
 endif()
 
-# Set platform-specific configurations based on the selected PLATFORM.
-if (${PLATFORM} MATCHES "Desktop")
+# Set platform-specific configurations based on the selected NEXUS_PLATFORM.
+if (${NEXUS_PLATFORM} MATCHES "Desktop")
     if (APPLE)
         # Force OpenGL 3.3 on macOS.
         find_library(OPENGL_LIBRARY OpenGL)
@@ -42,17 +42,17 @@ if (${PLATFORM} MATCHES "Desktop")
         endif ()
     endif ()
 
-elseif (${PLATFORM} MATCHES "Web")
+elseif (${NEXUS_PLATFORM} MATCHES "Web")
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -s ASSERTIONS=1 --profiling")
     set(CMAKE_STATIC_LIBRARY_SUFFIX ".a")
 
-elseif (${PLATFORM} MATCHES "Android")
+elseif (${NEXUS_PLATFORM} MATCHES "Android")
     set(CMAKE_POSITION_INDEPENDENT_CODE ON)
     set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -Wl,--build-id -Wl,-z,noexecstack -Wl,-z,relro -Wl,-z,now -Wl,--warn-shared-textrel")
     find_library(OPENGL_LIBRARY OpenGL)
     set(LIBS_PRIVATE m EGL GLESv2 OpenSLES)
 
-elseif ("${PLATFORM}" MATCHES "DRM")
+elseif ("${NEXUS_PLATFORM}" MATCHES "DRM")
     add_definitions(-D_DEFAULT_SOURCE)
     add_definitions(-DEGL_NO_X11)
     add_definitions(-DPLATFORM_DRM)
@@ -69,8 +69,8 @@ elseif ("${PLATFORM}" MATCHES "DRM")
 endif ()
 
 # Addition of GLAD in sources and external inclusions of 'nexus' if necessary
-if(PLATFORM STREQUAL "Desktop")
-    if(GRAPHICS_API STREQUAL "GL ES2" OR GRAPHICS_API STREQUAL "GL ES3")
+if(NEXUS_PLATFORM STREQUAL "Desktop")
+    if(NEXUS_GRAPHICS_API STREQUAL "GL ES2" OR NEXUS_GRAPHICS_API STREQUAL "GL ES3")
         list(APPEND NEXUS_EXTERNAL_SOURCES ${NEXUS_ROOT_PATH}/external/glad/src/gles2.c)
     else()
         list(APPEND NEXUS_EXTERNAL_SOURCES ${NEXUS_ROOT_PATH}/external/glad/src/gl.c)

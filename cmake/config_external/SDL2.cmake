@@ -17,7 +17,7 @@ add_subdirectory(${NEXUS_ROOT_PATH}/external/sdl2_ttf)
 add_subdirectory(${NEXUS_ROOT_PATH}/external/sdl2_image)
 
 # Adding links that SDL2 depends on in the links variable
-if(WIN32 AND ${PLATFORM} STREQUAL "Desktop")
+if(WIN32 AND ${NEXUS_PLATFORM} STREQUAL "Desktop")
     list(APPEND NEXUS_EXTERNAL_LIBS
         SDL2main
     )

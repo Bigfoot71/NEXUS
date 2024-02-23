@@ -59,18 +59,18 @@ NEXUS has been tested on Linux and Windows and is soon to be compatible with And
 
 2. **Set Build Options:** Open the CMakeOptions.txt file provided in the repository. This file contains various options that can be configured to customize the build process. Some of the key options include:
 
-   - **GRAPHICS_API:** Specify the desired graphics API for rendering. Options include `GL 1.1`, `GL 2.1`, `GL 3.3`, `GL 4.3`, `GL ES2`, `GL ES3`, `OFF` for no API, or `ALL` for all available APIs *(`ALL` will only include version 3.3 for OpenGL)*.
+   - **NEXUS_GRAPHICS_API:** Specify the desired graphics API for rendering. Options include `GL 1.1`, `GL 2.1`, `GL 3.3`, `GL 4.3`, `GL ES2`, `GL ES3`, `OFF` for no API, or `ALL` for all available APIs *(`ALL` will only include version 3.3 for OpenGL)*.
    - **NEXUS_BUILD_SHARED:** Specify whether to build NEXUS as a shared library (`ON`) or a static library (`OFF`).
    - **NEXUS_BUILD_EXAMPLES:** Specify whether to build the example projects (`ON` or `OFF`).
-   - **SUPPORT_AUDIO:** Enable optional support for audio (`ON` or `OFF`).
-   - **SUPPORT_MODEL:** Enable optional support for 3D models (`ON` or `OFF`).
-   - **SUPPORT_PHYSICS_2D:** Enable optional support for 2D physics (`ON` or `OFF`).
-   - **SUPPORT_PHYSICS_3D:** Enable optional support for 3D physics (`ON` or `OFF`).
-   - **SUPPORT_NETWORK:** Enable optional support for network (`ON` or `OFF`).
-   - **EXTENSION_CORE:** Enable extensions for the nexus::core module (`ON` or `OFF`).
-   - **EXTENSION_GFX:** Enable extensions for the nexus::gfx module (`ON` or `OFF`).
-   - **EXTENSION_2D:** Enable 2D components extension for gfx and gapi modules (`ON` or `OFF`).
-   - **EXTENSION_3D:** Enable 3D components extension for gapi modules (`ON` or `OFF`).
+   - **NEXUS_SUPPORT_AUDIO:** Enable optional support for audio (`ON` or `OFF`).
+   - **NEXUS_SUPPORT_MODEL:** Enable optional support for 3D models (`ON` or `OFF`).
+   - **NEXUS_SUPPORT_PHYSICS_2D:** Enable optional support for 2D physics (`ON` or `OFF`).
+   - **NEXUS_SUPPORT_PHYSICS_3D:** Enable optional support for 3D physics (`ON` or `OFF`).
+   - **NEXUS_SUPPORT_NETWORK:** Enable optional support for network (`ON` or `OFF`).
+   - **NEXUS_EXTENSION_CORE:** Enable extensions for the nexus::core module (`ON` or `OFF`).
+   - **NEXUS_EXTENSION_GFX:** Enable extensions for the nexus::gfx module (`ON` or `OFF`).
+   - **NEXUS_EXTENSION_2D:** Enable 2D components extension for gfx and gapi modules (`ON` or `OFF`).
+   - **NEXUS_EXTENSION_3D:** Enable 3D components extension for gapi modules (`ON` or `OFF`).
 
 3. **Generate Build Files:** Use CMake to generate build files based on the specified options. Navigate to the root directory of the cloned repository and run the following commands:
 
