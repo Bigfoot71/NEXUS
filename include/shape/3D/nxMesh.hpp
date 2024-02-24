@@ -47,7 +47,7 @@ namespace nexus { namespace shape3D {
     {
         static constexpr Uint8 VertexBufferCount = 7;
 
-        std::vector<math::Vec3> vertices;           ///< Vertex position (XYZ - 3 components per vertex) (shader-location = 0)
+        std::vector<math::Vec3> positions;           ///< Vertex position (XYZ - 3 components per vertex) (shader-location = 0)
         std::vector<math::Vec2> texcoords;          ///< Vertex texture coordinates (UV - 2 components per vertex) (shader-location = 1)
         std::vector<math::Vec3> normals;            ///< Vertex normals (XYZ - 3 components per vertex) (shader-location = 2)
         std::vector<gfx::Color> colors;             ///< Vertex colors (RGBA - 4 components per vertex) (shader-location = 3)
@@ -163,10 +163,23 @@ namespace nexus { namespace shape3D {
         Mesh() = default;
 
         /**
+         * @brief Copy constructor for the mesh.
+         * @param other The mesh to be copied from.
+         */
+        Mesh(const Mesh&);
+
+        /**
          * @brief Move constructor for the mesh.
          * @param other The mesh to be moved from.
          */
         Mesh(Mesh&&) noexcept;
+
+        /**
+         * @brief Copy assignment operator for the mesh.
+         * @param other The mesh to be copied from.
+         * @return Reference to the assigned mesh.
+         */
+        Mesh& operator=(const Mesh&);
 
         /**
          * @brief Move assignment operator for the mesh.

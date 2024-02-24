@@ -224,7 +224,7 @@ void sr::Context::DrawVertexArray(const _sr_impl::Mesh& mesh, sr::Material& mate
     const math::Mat4 mvp = state.modelview * state.projection;
     const shape2D::Rectangle viewport = { state.viewport.x, state.viewport.y, state.viewport.w - 1, state.viewport.h - 1 };
 
-    const auto &vertices = mesh.animVertices.empty() ? mesh.vertices : mesh.animVertices;
+    const auto &positions = mesh.animPositions.empty() ? mesh.positions : mesh.animPositions;
     const auto &normals = mesh.animNormals.empty() ? mesh.normals : mesh.animNormals;
 
     const gfx::Color colDiffuse = material->GetColor(Material::MapType::Diffuse);
@@ -241,22 +241,22 @@ void sr::Context::DrawVertexArray(const _sr_impl::Mesh& mesh, sr::Material& mate
     {
         for (int i = 0; i < mesh.numVertices; i += 2)
         {
-            pipeline.AddVertex(DrawMode::Lines, vertices[i].Transformed(transform), normals[i], GET_VERTEX_TEXCOORD(i), GET_VERTEX_COLOR(i) * colDiffuse);
-            pipeline.AddVertex(DrawMode::Lines, vertices[i + 1].Transformed(transform), normals[i + 1], GET_VERTEX_TEXCOORD(i + 1), GET_VERTEX_COLOR(i + 1) * colDiffuse);
+            pipeline.AddVertex(DrawMode::Lines, positions[i].Transformed(transform), normals[i], GET_VERTEX_TEXCOORD(i), GET_VERTEX_COLOR(i) * colDiffuse);
+            pipeline.AddVertex(DrawMode::Lines, positions[i + 1].Transformed(transform), normals[i + 1], GET_VERTEX_TEXCOORD(i + 1), GET_VERTEX_COLOR(i + 1) * colDiffuse);
             pipeline.ProcessAndRender(*state.currentFramebuffer, mvp, viewport, matShader, mapDiffuse, state.depthTesting);
         }
 
-        pipeline.AddVertex(DrawMode::Lines, vertices.back().Transformed(transform), normals.back(), GET_VERTEX_TEXCOORD(mesh.numVertices - 1), GET_VERTEX_COLOR(mesh.numVertices - 1) * colDiffuse);
-        pipeline.AddVertex(DrawMode::Lines, vertices.front().Transformed(transform), normals.front(), GET_VERTEX_TEXCOORD(0), GET_VERTEX_COLOR(0) * colDiffuse);
+        pipeline.AddVertex(DrawMode::Lines, positions.back().Transformed(transform), normals.back(), GET_VERTEX_TEXCOORD(mesh.numVertices - 1), GET_VERTEX_COLOR(mesh.numVertices - 1) * colDiffuse);
+        pipeline.AddVertex(DrawMode::Lines, positions.front().Transformed(transform), normals.front(), GET_VERTEX_TEXCOORD(0), GET_VERTEX_COLOR(0) * colDiffuse);
         pipeline.ProcessAndRender(*state.currentFramebuffer, mvp, viewport, matShader, mapDiffuse, state.depthTesting);
     }
     else if (!mesh.indices.empty())
     {
         for (int i = 0; i < mesh.indices.size(); i += 3)
         {
-            pipeline.AddVertex(DrawMode::Triangles, vertices[mesh.indices[i]].Transformed(transform), normals[mesh.indices[i]], GET_VERTEX_TEXCOORD(mesh.indices[i]), GET_VERTEX_COLOR(mesh.indices[i]) * colDiffuse);
-            pipeline.AddVertex(DrawMode::Triangles, vertices[mesh.indices[i + 1]].Transformed(transform), normals[mesh.indices[i + 1]], GET_VERTEX_TEXCOORD(mesh.indices[i + 1]), GET_VERTEX_COLOR(mesh.indices[i + 1]) * colDiffuse);
-            pipeline.AddVertex(DrawMode::Triangles, vertices[mesh.indices[i + 2]].Transformed(transform), normals[mesh.indices[i + 2]], GET_VERTEX_TEXCOORD(mesh.indices[i + 2]), GET_VERTEX_COLOR(mesh.indices[i + 2]) * colDiffuse);
+            pipeline.AddVertex(DrawMode::Triangles, positions[mesh.indices[i]].Transformed(transform), normals[mesh.indices[i]], GET_VERTEX_TEXCOORD(mesh.indices[i]), GET_VERTEX_COLOR(mesh.indices[i]) * colDiffuse);
+            pipeline.AddVertex(DrawMode::Triangles, positions[mesh.indices[i + 1]].Transformed(transform), normals[mesh.indices[i + 1]], GET_VERTEX_TEXCOORD(mesh.indices[i + 1]), GET_VERTEX_COLOR(mesh.indices[i + 1]) * colDiffuse);
+            pipeline.AddVertex(DrawMode::Triangles, positions[mesh.indices[i + 2]].Transformed(transform), normals[mesh.indices[i + 2]], GET_VERTEX_TEXCOORD(mesh.indices[i + 2]), GET_VERTEX_COLOR(mesh.indices[i + 2]) * colDiffuse);
             pipeline.ProcessAndRender(*state.currentFramebuffer, mvp, viewport, matShader, mapDiffuse, state.depthTesting);
         }
     }
@@ -264,9 +264,9 @@ void sr::Context::DrawVertexArray(const _sr_impl::Mesh& mesh, sr::Material& mate
     {
         for (int i = 0; i < mesh.numVertices; i += 3)
         {
-            pipeline.AddVertex(DrawMode::Triangles, vertices[i].Transformed(transform), normals[i], GET_VERTEX_TEXCOORD(i), GET_VERTEX_COLOR(i) * colDiffuse);
-            pipeline.AddVertex(DrawMode::Triangles, vertices[i + 1].Transformed(transform), normals[i + 1], GET_VERTEX_TEXCOORD(i + 1), GET_VERTEX_COLOR(i + 1) * colDiffuse);
-            pipeline.AddVertex(DrawMode::Triangles, vertices[i + 2].Transformed(transform), normals[i + 2], GET_VERTEX_TEXCOORD(i + 2), GET_VERTEX_COLOR(i + 2) * colDiffuse);
+            pipeline.AddVertex(DrawMode::Triangles, positions[i].Transformed(transform), normals[i], GET_VERTEX_TEXCOORD(i), GET_VERTEX_COLOR(i) * colDiffuse);
+            pipeline.AddVertex(DrawMode::Triangles, positions[i + 1].Transformed(transform), normals[i + 1], GET_VERTEX_TEXCOORD(i + 1), GET_VERTEX_COLOR(i + 1) * colDiffuse);
+            pipeline.AddVertex(DrawMode::Triangles, positions[i + 2].Transformed(transform), normals[i + 2], GET_VERTEX_TEXCOORD(i + 2), GET_VERTEX_COLOR(i + 2) * colDiffuse);
             pipeline.ProcessAndRender(*state.currentFramebuffer, mvp, viewport, matShader, mapDiffuse, state.depthTesting);
         }
     }

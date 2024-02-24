@@ -109,13 +109,13 @@ namespace nexus { namespace phys3D {
 
         triMesh->preallocateVertices(mesh->numVertices);
 
-        const math::Vec3 *vertices = mesh->vertices.data();
+        const math::Vec3 *positions = mesh->positions.data();
 
         for (int i = 0; i < mesh->numVertices; i += 3)
         {
-            const math::Vec3& vertexA = vertices[i];
-            const math::Vec3& vertexB = vertices[i+1];
-            const math::Vec3& vertexC = vertices[i+2];
+            const math::Vec3& vertexA = positions[i];
+            const math::Vec3& vertexB = positions[i+1];
+            const math::Vec3& vertexC = positions[i+2];
 
             triMesh->addTriangle(
                 btVector3(vertexA.x, vertexA.y, vertexA.z),
@@ -129,7 +129,7 @@ namespace nexus { namespace phys3D {
     template <typename T_Mesh>
     btCollisionShape* RigidModel::GenShapeHull(const T_Mesh& mesh)
     {
-        return new btConvexHullShape(reinterpret_cast<const float*>(mesh->vertices.data()), mesh->vertices.size(), sizeof(math::Vec3));
+        return new btConvexHullShape(reinterpret_cast<const float*>(mesh->positions.data()), mesh->positions.size(), sizeof(math::Vec3));
     }
 
     template <typename T_Mesh>

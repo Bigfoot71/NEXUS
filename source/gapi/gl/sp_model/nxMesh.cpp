@@ -56,7 +56,7 @@ void _gl_impl::Mesh::UpdateAnimation(std::vector<_gapi_impl::BoneInfo>& boneInfo
 {
     if (_gapi_impl::Mesh<gl::Context, gl::Material>::UpdateAnimation(boneInfos))
     {
-        ctx.UpdateVertexBuffer(vboId[0], animVertices.data(), VectorSize(animVertices), 0); // Update vertex position
+        ctx.UpdateVertexBuffer(vboId[0], animPositions.data(), VectorSize(animPositions), 0); // Update vertex position
 
         if (!normals.empty())
         {
@@ -81,8 +81,8 @@ void _gl_impl::Mesh::Upload(bool dynamic)
     // NOTE: Vertex attributes must be uploaded considering default locations points and available vertex data
 
     // Enable vertex attributes: position (shader-location = 0)
-    const auto &verts = (!animVertices.empty() ? animVertices : vertices);
-    vboId[0] = ctx.LoadVertexBuffer(verts.data(), VectorSize(verts), dynamic);
+    const auto &positions = (!animPositions.empty() ? animPositions : this->positions);
+    vboId[0] = ctx.LoadVertexBuffer(positions.data(), VectorSize(positions), dynamic);
     ctx.SetVertexAttribute(0, 3, gl::DataType::Float, 0, 0, 0);
     ctx.EnableVertexAttribute(0);
 
@@ -193,8 +193,8 @@ void _gl_impl::Mesh::Update(Uint8 buffer)
     switch (buffer)
     {
         case 0: {
-            vbuf = vertices.data();
-            size = VectorSize(vertices);
+            vbuf = positions.data();
+            size = VectorSize(positions);
         } break;
 
         case 1: {
@@ -270,7 +270,7 @@ void _gl_impl::Mesh::Draw(const gl::Material& material, const math::Mat4& transf
 
     ctx.EnableTexture(material->maps[Matrerial::Diffuse].texture.GetID());
 
-    ctx.EnableStatePointer(GL_VERTEX_ARRAY, vertices.data());
+    ctx.EnableStatePointer(GL_VERTEX_ARRAY, positions.data());
     ctx.EnableStatePointer(GL_TEXTURE_COORD_ARRAY, texcoords.data());
     ctx.EnableStatePointer(GL_NORMAL_ARRAY, normals.data());
     ctx.EnableStatePointer(GL_COLOR_ARRAY, colors.data());

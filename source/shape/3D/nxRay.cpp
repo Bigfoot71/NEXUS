@@ -312,21 +312,21 @@ shape3D::RayCollision shape3D::Ray::CollisionMesh(const nexus::shape3D::Mesh& me
     RayCollision collision{ position, {}, 0, false };
 
     // Test against all triangles in mesh
-    for (Uint32 i = 0; i < mesh.vertices.size(); i++)
+    for (Uint32 i = 0; i < mesh.positions.size(); i++)
     {
         math::Vec3 v0, v1, v2;
 
         if (!mesh.indices.empty())
         {
-            v0 = mesh.vertices[mesh.indices[i * 3 + 0]].Transformed(transform);
-            v1 = mesh.vertices[mesh.indices[i * 3 + 1]].Transformed(transform);
-            v2 = mesh.vertices[mesh.indices[i * 3 + 2]].Transformed(transform);
+            v0 = mesh.positions[mesh.indices[i * 3 + 0]].Transformed(transform);
+            v1 = mesh.positions[mesh.indices[i * 3 + 1]].Transformed(transform);
+            v2 = mesh.positions[mesh.indices[i * 3 + 2]].Transformed(transform);
         }
         else
         {
-            v0 = mesh.vertices[i * 3 + 0].Transformed(transform);
-            v1 = mesh.vertices[i * 3 + 1].Transformed(transform);
-            v2 = mesh.vertices[i * 3 + 2].Transformed(transform);
+            v0 = mesh.positions[i * 3 + 0].Transformed(transform);
+            v1 = mesh.positions[i * 3 + 1].Transformed(transform);
+            v2 = mesh.positions[i * 3 + 2].Transformed(transform);
         }
 
         RayCollision triHitInfo = CollisionTriangle(v0, v1, v2);

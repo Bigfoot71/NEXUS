@@ -17,7 +17,7 @@ add_executable(gl_triangle triangle.cpp)
 add_executable(gl_font_3d font_3d.cpp)
 add_executable(gl_app app.cpp)
 
-if(SUPPORT_MODEL)
+if(NEXUS_SUPPORT_MODEL)
     add_executable(gl_model_animation_3d model_animation_3d.cpp)
     add_executable(gl_model_3d model_3d.cpp)
 endif()

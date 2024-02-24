@@ -124,7 +124,7 @@ namespace _gapi_impl {
 
       public:
         // Animation vertex data (copy of original for animation transforms)
-        std::vector<nexus::math::Vec3> animVertices;   ///< Animated vertex positions (after bone transformations)
+        std::vector<nexus::math::Vec3> animPositions;  ///< Animated vertex positions (after bone transformations)
         std::vector<nexus::math::Vec3> animNormals;    ///< Animated normals (after bone transformations)
         std::vector<VertexBoneData> bones;             ///< Bone influences for each vertex
 
@@ -144,10 +144,6 @@ namespace _gapi_impl {
         static Mesh Heightmap(T_Context& ctx, const nexus::gfx::Surface& heightmap, const nexus::math::Vec3& size);
         static Mesh Cubicmap(T_Context& ctx, const nexus::gfx::Surface& cubicmap, const nexus::math::Vec3& cubeSize);
 
-      private:
-        // Private constructor used internally to move generated vertices by shape3D::Mesh static generation functions
-        Mesh(T_Context& ctx, nexus::shape3D::Mesh&& mesh);
-
       public:
         /**
          * @brief Constructor that initializes an empty mesh that the user can generate.
@@ -163,6 +159,14 @@ namespace _gapi_impl {
          * @param boneInfos Information about the bones.
          */
         Mesh(T_Context& ctx, const aiMesh* mesh, std::unordered_map<std::string, int>& boneIDMap, std::vector<BoneInfo>& boneInfos);
+
+        Mesh(T_Context& ctx, const nexus::shape2D::Mesh& mesh2D);
+
+        Mesh(T_Context& ctx, nexus::shape2D::Mesh&& mesh2D);
+
+        Mesh(T_Context& ctx, const nexus::shape3D::Mesh& mesh3D);
+
+        Mesh(T_Context& ctx, nexus::shape3D::Mesh&& mesh3D);
 
         // NOTE: Mesh copy is currently impossible
         //Mesh(const Mesh&) = delete;
@@ -201,15 +205,6 @@ namespace _gapi_impl {
     };
 
 
-    /* Private Implementation Mesh */
-
-    template <typename T_Context, typename T_Material>
-    Mesh<T_Context, T_Material>::Mesh(T_Context& ctx, nexus::shape3D::Mesh&& mesh)
-    : nexus::utils::Contextual<T_Context>(ctx)
-    , nexus::shape3D::Mesh(std::move(mesh))
-    { }
-
-
     /* Public Implementation Mesh */
 
     template <typename T_Context, typename T_Material>
@@ -224,7 +219,7 @@ namespace _gapi_impl {
         numVertices = mesh->mNumVertices;
         numFaces = mesh->mNumFaces;
 
-        vertices.reserve(numVertices);
+        positions.reserve(numVertices);
 
         if (mesh->HasTextureCoords(0)) texcoords.reserve(numVertices);
         if (mesh->HasNormals()) normals.reserve(numVertices);
@@ -235,7 +230,7 @@ namespace _gapi_impl {
 
         for (int i = 0; i < numVertices; i++)
         {
-            vertices.push_back(mesh->mVertices[i]);
+            positions.push_back(mesh->mVertices[i]);
 
             if (texcoords.capacity()) texcoords.emplace_back(mesh->mTextureCoords[0][i].x, mesh->mTextureCoords[0][i].y);
             if (normals.capacity()) normals.emplace_back(mesh->mNormals[i].x, mesh->mNormals[i].y, mesh->mNormals[i].z);
@@ -257,7 +252,7 @@ namespace _gapi_impl {
         if (mesh->HasBones())
         {
             bones.resize(numVertices);
-            animVertices = vertices;
+            animPositions = positions;
             animNormals = normals;
 
             for (Uint32 i = 0; i < mesh->mNumBones; i++)
@@ -293,10 +288,58 @@ namespace _gapi_impl {
     }
 
     template <typename T_Context, typename T_Material>
+    Mesh<T_Context, T_Material>::Mesh(T_Context& ctx, const nexus::shape2D::Mesh& mesh2D)
+    : nexus::utils::Contextual<T_Context>(ctx)
+    {
+        this->indices = mesh2D.indices;
+
+        this->positions.reserve(mesh2D.vertices.size());
+        this->texcoord.reserve(mesh2D.vertices.size());
+        this->colors.reserve(mesh2D.vertices.size());
+
+        for (const auto& vertex : mesh2D.vertices)
+        {
+            this->positions.emplace_back(vertex.position);
+            this->texcoords.emplace_back(vertex.texcoord);
+            this->colors.emplace_back(vertex.color);
+        }
+    }
+
+    template <typename T_Context, typename T_Material>
+    Mesh<T_Context, T_Material>::Mesh(T_Context& ctx, nexus::shape2D::Mesh&& mesh2D)
+    : nexus::utils::Contextual<T_Context>(ctx)
+    {
+        this->indices = std::move(mesh2D.indices);
+
+        this->positions.reserve(mesh2D.vertices.size());
+        this->texcoord.reserve(mesh2D.vertices.size());
+        this->colors.reserve(mesh2D.vertices.size());
+
+        for (const auto& vertex : mesh2D.vertices)
+        {
+            this->positions.emplace_back(vertex.position);
+            this->texcoords.emplace_back(vertex.texcoord);
+            this->colors.emplace_back(vertex.color);
+        }
+    }
+
+    template <typename T_Context, typename T_Material>
+    Mesh<T_Context, T_Material>::Mesh(T_Context& ctx, const nexus::shape3D::Mesh& mesh3D)
+    : nexus::utils::Contextual<T_Context>(ctx)
+    , nexus::shape3D::Mesh(mesh3D)
+    { }
+
+    template <typename T_Context, typename T_Material>
+    Mesh<T_Context, T_Material>::Mesh(T_Context& ctx, nexus::shape3D::Mesh&& mesh)
+    : nexus::utils::Contextual<T_Context>(ctx)
+    , nexus::shape3D::Mesh(std::move(mesh))
+    { }
+
+    template <typename T_Context, typename T_Material>
     Mesh<T_Context, T_Material>::Mesh(Mesh&& other) noexcept
     : nexus::utils::Contextual<T_Context>(other.ctx)
     , nexus::shape3D::Mesh(other)
-    , animVertices(std::move(other.animVertices))
+    , animPositions(std::move(other.animPositions))
     , animNormals(std::move(other.animNormals))
     , bones(std::move(other.bones))
     { }
@@ -308,14 +351,14 @@ namespace _gapi_impl {
         {
             numVertices   = std::exchange(other.numVertices, 0);
             numFaces      = std::exchange(other.numFaces, 0);
-            vertices      = std::move(other.vertices);
+            positions     = std::move(other.positions);
             texcoords     = std::move(other.texcoords);
             normals       = std::move(other.normals);
             colors        = std::move(other.colors);
             tangents      = std::move(other.tangents);
             texcoords2    = std::move(other.texcoords2);
             indices       = std::move(other.indices);
-            animVertices  = std::move(other.animVertices);
+            animPositions = std::move(other.animPositions);
             animNormals   = std::move(other.animNormals);
             bones         = std::move(other.bones);
         }
@@ -328,14 +371,14 @@ namespace _gapi_impl {
     {
         numVertices   = std::exchange(other.numVertices, 0);
         numFaces      = std::exchange(other.numFaces, 0);
-        vertices      = std::move(other.vertices);
+        positions     = std::move(other.positions);
         texcoords     = std::move(other.texcoords);
         normals       = std::move(other.normals);
         colors        = std::move(other.colors);
         tangents      = std::move(other.tangents);
         texcoords2    = std::move(other.texcoords2);
         indices       = std::move(other.indices);
-        animVertices  = std::move(other.animVertices);
+        animPositions = std::move(other.animPositions);
         animNormals   = std::move(other.animNormals);
         bones         = std::move(other.bones);
     }
@@ -359,7 +402,7 @@ namespace _gapi_impl {
 
             if (transform != nexus::math::Mat4()) // TODO: Optimize this
             {
-                animVertices[i] = vertices[i].Transformed(transform);
+                animPositions[i] = positions[i].Transformed(transform);
 
                 const nexus::math::Vec3& n = normals[i];
                 const nexus::math::Vec4 norm = transform * nexus::math::Vec4(n.x, n.y, n.z, 0.0f);

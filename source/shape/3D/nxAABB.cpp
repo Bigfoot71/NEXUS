@@ -138,21 +138,21 @@ bool shape3D::AABB::CollisionMesh(const nexus::shape3D::Mesh& mesh, const math::
     // Calculation of half lengths of AABB
     const math::Vec3 halfLengths = (max - min) * 0.5f;
 
-    for (Uint32 i = 0; i < mesh.vertices.size(); i += 3)
+    for (Uint32 i = 0; i < mesh.positions.size(); i += 3)
     {
         math::Vec3 v0, v1, v2;
 
         if (!mesh.indices.empty())
         {
-            v0 = mesh.vertices[mesh.indices[i]].Transformed(transform);
-            v1 = mesh.vertices[mesh.indices[i + 1]].Transformed(transform);
-            v2 = mesh.vertices[mesh.indices[i + 2]].Transformed(transform);
+            v0 = mesh.positions[mesh.indices[i]].Transformed(transform);
+            v1 = mesh.positions[mesh.indices[i + 1]].Transformed(transform);
+            v2 = mesh.positions[mesh.indices[i + 2]].Transformed(transform);
         }
         else
         {
-            v0 = mesh.vertices[i].Transformed(transform);
-            v1 = mesh.vertices[i + 1].Transformed(transform);
-            v2 = mesh.vertices[i + 2].Transformed(transform);
+            v0 = mesh.positions[i].Transformed(transform);
+            v1 = mesh.positions[i + 1].Transformed(transform);
+            v2 = mesh.positions[i + 2].Transformed(transform);
         }
 
         // Loop on the different separation axes
