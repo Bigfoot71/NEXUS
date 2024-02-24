@@ -910,6 +910,8 @@ void _gapi_primitives_2d::DrawRectangleRoundedLines(gapi::Context& ctx, const sh
 
 void _gapi_primitives_2d::DrawTriangle(gapi::Context& ctx, const math::Vec2& p1, const math::Vec2& p2, const math::Vec2& p3, const gfx::Color& color)
 {
+#   if SUPPORT_SOFTWARE_RASTERIZER
+
     IF_GAPI_IS(sr)
     {
         ctx.Begin(gapi::DrawMode::Triangles);
@@ -944,6 +946,30 @@ void _gapi_primitives_2d::DrawTriangle(gapi::Context& ctx, const math::Vec2& p1,
         ctx.End();
         ctx.UnsetTexture();
     }
+
+#   else
+
+    ctx.SetDefaultTexture();
+    ctx.Begin(gapi::DrawMode::Quads);
+
+        ctx.Color(color);
+
+        ctx.TexCoord(0, 0);
+        ctx.Vertex(p1.x, p1.y);
+
+        ctx.TexCoord(0, 1);
+        ctx.Vertex(p2.x, p2.y);
+
+        ctx.TexCoord(1, 1);
+        ctx.Vertex(p2.x, p2.y);
+
+        ctx.TexCoord(1, 0);
+        ctx.Vertex(p3.x, p3.y);
+
+    ctx.End();
+    ctx.UnsetTexture();
+
+#   endif
 }
 
 void _gapi_primitives_2d::DrawTriangleLines(gapi::Context& ctx, const math::Vec2& p1, const math::Vec2& p2, const math::Vec2& p3, const gfx::Color& color)
@@ -967,7 +993,7 @@ void _gapi_primitives_2d::DrawTriangleFan(gapi::Context& ctx, const math::Vec2* 
 {
     if (count < 3) return;
 
-    ctx.SetDefaultTexture();
+#   if SUPPORT_SOFTWARE_RASTERIZER
 
     IF_GAPI_IS(sr)
     {
@@ -991,6 +1017,7 @@ void _gapi_primitives_2d::DrawTriangleFan(gapi::Context& ctx, const math::Vec2* 
     }
     else
     {
+        ctx.SetDefaultTexture();
         ctx.Begin(gapi::DrawMode::Quads);
 
             ctx.Color(color);
@@ -1011,9 +1038,35 @@ void _gapi_primitives_2d::DrawTriangleFan(gapi::Context& ctx, const math::Vec2* 
             }
 
         ctx.End();
+        ctx.UnsetTexture();
     }
 
+#   else
+
+    ctx.SetDefaultTexture();
+    ctx.Begin(gapi::DrawMode::Quads);
+
+        ctx.Color(color);
+
+        for (int i = 1; i < count - 1; i++)
+        {
+            ctx.TexCoord(0, 0);
+            ctx.Vertex(points[0]);
+
+            ctx.TexCoord(0, 1);
+            ctx.Vertex(points[i]);
+
+            ctx.TexCoord(1, 1);
+            ctx.Vertex(points[i + 1]);
+
+            ctx.TexCoord(1, 0);
+            ctx.Vertex(points[i + 1]);
+        }
+
+    ctx.End();
     ctx.UnsetTexture();
+
+#   endif
 }
 
 void _gapi_primitives_2d::DrawTriangleStrip(gapi::Context& ctx, const math::Vec2* points, std::size_t count, const gfx::Color& color)

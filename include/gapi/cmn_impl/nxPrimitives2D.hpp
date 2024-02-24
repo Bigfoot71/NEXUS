@@ -58,15 +58,19 @@ namespace _gapi_primitives_2d_impl {
     template <typename T_Texture>
     inline void SetTexture(nexus::gapi::Context& ctx, const T_Texture* texture)
     {
+#       if SUPPORT_OPENGL
         IF_GAPI_IS(gl)
         {
             static_cast<nexus::gl::Context&>(ctx).SetTexture(texture ? (*texture)->GetID()
                 : static_cast<nexus::gl::Context&>(ctx).GetTextureIdDefault());
         }
-        ELIF_GAPI_IS(sr)
+#       endif
+#       if SUPPORT_SOFTWARE_RASTERIZER
+        IF_GAPI_IS(sr)
         {
             static_cast<nexus::sr::Context&>(ctx).SetTexture(texture);
         }
+#       endif
     }
 
 }
@@ -775,6 +779,8 @@ namespace _gapi_primitives_2d {
 
         _gapi_primitives_2d_impl::SetTexture(ctx, texture);
 
+#       if SUPPORT_SOFTWARE_RASTERIZER
+
         IF_GAPI_IS(sr)
         {
             ctx.Begin(nexus::gapi::DrawMode::Triangles);
@@ -821,6 +827,33 @@ namespace _gapi_primitives_2d {
 
             ctx.End();
         }
+
+#       else // NOT SUPPORT_SOFTWARE_RASTERIZER
+
+        ctx.Begin(nexus::gapi::DrawMode::Quads);
+
+            for (int i = 1; i < vertices.size() - 1; i++)
+            {
+                ctx.Color(vertices[0].color);
+                ctx.TexCoord(vertices[0].texcoord);
+                ctx.Vertex(vertices[0].position);
+
+                ctx.Color(vertices[i].color);
+                ctx.TexCoord(vertices[i].texcoord);
+                ctx.Vertex(vertices[i].position);
+
+                ctx.Color(vertices[i + 1].color);
+                ctx.TexCoord(vertices[i + 1].texcoord);
+                ctx.Vertex(vertices[i + 1].position);
+
+                ctx.Color(vertices[i + 1].color);
+                ctx.TexCoord(vertices[i + 1].texcoord);
+                ctx.Vertex(vertices[i + 1].position);
+            }
+
+        ctx.End();
+
+#       endif
 
         ctx.UnsetTexture();
     }
@@ -878,6 +911,8 @@ namespace _gapi_primitives_2d {
 
         _gapi_primitives_2d_impl::SetTexture(ctx, texture);
 
+#       if SUPPORT_SOFTWARE_RASTERIZER
+
         IF_GAPI_IS(sr)
         {
             ctx.Begin(nexus::gapi::DrawMode::Triangles);
@@ -962,6 +997,54 @@ namespace _gapi_primitives_2d {
 
             ctx.End();
         }
+
+#       else // NOT SUPPORT_SOFTWARE_RASTERIZER
+
+        ctx.Begin(nexus::gapi::DrawMode::Quads);
+
+            for (int i = 2; i < vertices.size(); i++)
+            {
+                if (i % 2 == 0)
+                {
+                    ctx.Color(vertices[i].color);
+                    ctx.TexCoord(vertices[i].texcoord);
+                    ctx.Vertex(vertices[i].position);
+
+                    ctx.Color(vertices[i - 2].color);
+                    ctx.TexCoord(vertices[i - 2].texcoord);
+                    ctx.Vertex(vertices[i - 2].position);
+
+                    ctx.Color(vertices[i - 1].color);
+                    ctx.TexCoord(vertices[i - 1].texcoord);
+                    ctx.Vertex(vertices[i - 1].position);
+
+                    ctx.Color(vertices[i - 1].color);
+                    ctx.TexCoord(vertices[i - 1].texcoord);
+                    ctx.Vertex(vertices[i - 1].position);
+                }
+                else
+                {
+                    ctx.Color(vertices[i].color);
+                    ctx.TexCoord(vertices[i].texcoord);
+                    ctx.Vertex(vertices[i].position);
+
+                    ctx.Color(vertices[i - 1].color);
+                    ctx.TexCoord(vertices[i - 1].texcoord);
+                    ctx.Vertex(vertices[i - 1].position);
+
+                    ctx.Color(vertices[i - 2].color);
+                    ctx.TexCoord(vertices[i - 2].texcoord);
+                    ctx.Vertex(vertices[i - 2].position);
+
+                    ctx.Color(vertices[i - 2].color);
+                    ctx.TexCoord(vertices[i - 2].texcoord);
+                    ctx.Vertex(vertices[i - 2].position);
+                }
+            }
+
+        ctx.End();
+
+#       endif
 
         ctx.UnsetTexture();
     }
