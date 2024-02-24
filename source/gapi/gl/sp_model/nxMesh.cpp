@@ -271,7 +271,7 @@ void _gl_impl::Mesh::Draw(const gl::Material& material, const math::Mat4& transf
     ctx.EnableTexture(material->maps[Matrerial::Diffuse].texture.GetID());
 
     ctx.EnableStatePointer(GL_VERTEX_ARRAY, vertices.data());
-    ctx.EnableStatePointer(GL_TEXTURE_COORD_ARRAY, texcoords).data();
+    ctx.EnableStatePointer(GL_TEXTURE_COORD_ARRAY, texcoords.data());
     ctx.EnableStatePointer(GL_NORMAL_ARRAY, normals.data());
     ctx.EnableStatePointer(GL_COLOR_ARRAY, colors.data());
 
@@ -325,26 +325,26 @@ void _gl_impl::Mesh::Draw(const gl::Material& material, const math::Mat4& transf
 
     // Upload view and projection matrices (if locations available)
     if (shader->locs[gl::LocMatrixView] != -1)
-        ctx.SetUniformMatrix(shader->locs[gl::LocMatrixView], matView.m);
+        ctx.SetUniformMatrix(shader->locs[gl::LocMatrixView], matView);
 
     if (shader->locs[gl::LocMatrixProjection] != -1)
-        ctx.SetUniformMatrix(shader->locs[gl::LocMatrixProjection], matProjection.m);
+        ctx.SetUniformMatrix(shader->locs[gl::LocMatrixProjection], matProjection);
 
     // Model transformation matrix is sent to shader uniform location: SHADER_LOC_MATRIX_MODEL
     if (shader->locs[gl::LocMatrixModel] != -1)
-        ctx.SetUniformMatrix(shader->locs[gl::LocMatrixModel], transform.m);
+        ctx.SetUniformMatrix(shader->locs[gl::LocMatrixModel], transform);
 
     // Accumulate several model transformations:
     //    transform: model transformation provided (includes DrawModel() params combined with model.transform)
     //    rlGetMatrixTransform(): rlgl internal transform matrix due to push/pop matrix stack
-    matModel = transform * ctx.GetMatrixTransform().m;
+    matModel = transform * ctx.GetMatrixTransform();
 
     // Get model-view matrix
     matModelView = matModel * matView;
 
     // Upload model normal matrix (if locations available)
     if (shader->locs[gl::LocMatrixNormal] != -1)
-        ctx.SetUniformMatrix(shader->locs[gl::LocMatrixNormal], matModel.Invert().Transpose().m);
+        ctx.SetUniformMatrix(shader->locs[gl::LocMatrixNormal], matModel.Invert().Transpose());
     //-----------------------------------------------------
 
     // Bind active texture maps (if available)
@@ -452,11 +452,11 @@ void _gl_impl::Mesh::Draw(const gl::Material& material, const math::Mat4& transf
         {
             // Setup current eye viewport (half screen width)
             ctx.Viewport(eye*ctx.GetFramebufferWidth()/2, 0, ctx.GetFramebufferWidth()/2, ctx.GetFramebufferHeight());
-            matModelViewProjection = (matModelView * ctx.GetMatrixViewOffsetStereo(eye).m) * ctx.GetMatrixProjectionStereo(eye).m;
+            matModelViewProjection = (matModelView * ctx.GetMatrixViewOffsetStereo(eye)) * ctx.GetMatrixProjectionStereo(eye);
         }
 
         // Send combined model-view-projection matrix to shader
-        ctx.SetUniformMatrix(shader->locs[gl::LocMatrixMVP], matModelViewProjection.m);
+        ctx.SetUniformMatrix(shader->locs[gl::LocMatrixMVP], matModelViewProjection);
 
         // Draw mesh
         if (!indices.empty()) ctx.DrawVertexArrayElements(0, numFaces*3, 0);
@@ -494,8 +494,8 @@ void _gl_impl::Mesh::Draw(const gl::Material& material, const math::Mat4& transf
     ctx.DisableShader();
 
     // Restore rlgl internal modelview and projection matrices
-    ctx.SetMatrixModelview(matView.m);
-    ctx.SetMatrixProjection(matProjection.m);
+    ctx.SetMatrixModelview(matView);
+    ctx.SetMatrixProjection(matProjection);
 #endif
 }
 
@@ -535,10 +535,10 @@ void _gl_impl::Mesh::Draw(const gl::Material& material, const std::vector<math::
 
     // Upload view and projection matrices (if locations available)
     if (shader->locs[gl::LocMatrixView] != -1)
-        ctx.SetUniformMatrix(shader->locs[gl::LocMatrixView], matView.m);
+        ctx.SetUniformMatrix(shader->locs[gl::LocMatrixView], matView);
 
     if (shader->locs[gl::LocMatrixProjection] != -1)
-        ctx.SetUniformMatrix(shader->locs[gl::LocMatrixProjection], matProjection.m);
+        ctx.SetUniformMatrix(shader->locs[gl::LocMatrixProjection], matProjection);
 
     // Enable mesh VAO to attach new buffer
     ctx.EnableVertexArray(vaoId);
@@ -567,7 +567,7 @@ void _gl_impl::Mesh::Draw(const gl::Material& material, const std::vector<math::
     // Upload model normal matrix (if locations available)
     if (shader->locs[gl::LocMatrixNormal] != -1)
     {
-        ctx.SetUniformMatrix(shader->locs[gl::LocMatrixNormal], matModel.Invert().Transpose().m);
+        ctx.SetUniformMatrix(shader->locs[gl::LocMatrixNormal], matModel.Invert().Transpose());
     }
     //-----------------------------------------------------
 
@@ -674,11 +674,11 @@ void _gl_impl::Mesh::Draw(const gl::Material& material, const std::vector<math::
         {
             // Setup current eye viewport (half screen width)
             ctx.Viewport(eye*ctx.GetFramebufferWidth()/2, 0, ctx.GetFramebufferWidth()/2, ctx.GetFramebufferHeight());
-            matModelViewProjection = (matModelView * ctx.GetMatrixViewOffsetStereo(eye).m) * ctx.GetMatrixProjectionStereo(eye).m;
+            matModelViewProjection = (matModelView * ctx.GetMatrixViewOffsetStereo(eye)) * ctx.GetMatrixProjectionStereo(eye);
         }
 
         // Send combined model-view-projection matrix to shader
-        ctx.SetUniformMatrix(shader->locs[gl::LocMatrixMVP], matModelViewProjection.m);
+        ctx.SetUniformMatrix(shader->locs[gl::LocMatrixMVP], matModelViewProjection);
 
         // Draw mesh
         if (!indices.empty()) ctx.DrawVertexArrayElements(0, numFaces*3, 0);
