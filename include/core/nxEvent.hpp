@@ -21,6 +21,7 @@
 #define NEXUS_CORE_EVENT_HPP
 
 #include "../platform/nxPlatform.hpp"
+#include "core/nxException.hpp"
 #include <SDL.h>
 
 namespace nexus { namespace core {
@@ -195,6 +196,7 @@ namespace nexus { namespace core {
         };
 
       private:
+        static inline bool initialized = false;
         SDL_Event event;
 
       public:
@@ -203,6 +205,12 @@ namespace nexus { namespace core {
             if (!SDL_WasInit(SDL_INIT_EVENTS))
             {
                 SDL_InitSubSystem(SDL_INIT_EVENTS);
+                initialized = true;
+            }
+            else if (initialized)
+            {
+                throw NexusException("Event",
+                    "Attempt to create a second instance of Event. Only one instance can be created.");
             }
         }
 
@@ -211,7 +219,18 @@ namespace nexus { namespace core {
             if (SDL_WasInit(SDL_INIT_EVENTS))
             {
                 SDL_QuitSubSystem(SDL_INIT_EVENTS);
+                initialized = false;
             }
+        }
+
+        operator SDL_Event&()
+        {
+            return event;
+        }
+
+        operator const SDL_Event&() const
+        {
+            return event;
         }
 
         int Poll()
