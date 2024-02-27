@@ -71,7 +71,7 @@ namespace nexus { namespace core {
 
             // These application events have special meaning on iOS, see sdl/README-ios.md for details
 
-            Teraminating                = SDL_APP_TERMINATING,          /**< The application is being terminated by the OS
+            Terminating                 = SDL_APP_TERMINATING,          /**< The application is being terminated by the OS
                                                                                 Called on iOS in applicationWillTerminate()
                                                                                 Called on Android in onDestroy()
                                                                         */
