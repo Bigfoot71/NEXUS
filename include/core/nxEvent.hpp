@@ -29,36 +29,36 @@ namespace nexus { namespace core {
     class NEXUS_API Event
     {
       public:
-        using Common = SDL_CommonEvent;                             ///< Common event data
-        using Display = SDL_DisplayEvent;                           ///< Display event data
-        using Window = SDL_WindowEvent;                             ///< Window event data
-        using Keyboard = SDL_KeyboardEvent;                         ///< Keyboard event data
-        using TextEditing = SDL_TextEditingEvent;                   ///< Text editing event data
-        using TextEditingExt = SDL_TextEditingExtEvent;             ///< Extended text editing event data
-        using TextInput = SDL_TextInputEvent;                       ///< Text input event data
-        using MouseMotion = SDL_MouseMotionEvent;                   ///< Mouse motion event data
-        using MouseButton = SDL_MouseButtonEvent;                   ///< Mouse button event data
-        using MouseWheel = SDL_MouseWheelEvent;                     ///< Mouse wheel event data
-        using JoyAxis = SDL_JoyAxisEvent;                           ///< Joystick axis event data
-        using JoyBall = SDL_JoyBallEvent;                           ///< Joystick ball event data
-        using JoyHat = SDL_JoyHatEvent;                             ///< Joystick hat event data
-        using JoyButton = SDL_JoyButtonEvent;                       ///< Joystick button event data
-        using JoyDevice = SDL_JoyDeviceEvent;                       ///< Joystick device change event data
-        using JoyBattery = SDL_JoyBatteryEvent;                     ///< Joystick battery event data
-        using ControllerAxis = SDL_ControllerAxisEvent;             ///< Game Controller axis event data
-        using ControllerButton = SDL_ControllerButtonEvent;         ///< Game Controller button event data
-        using ControllerDevice = SDL_ControllerDeviceEvent;         ///< Game Controller device event data
-        using ControllerTouchpad = SDL_ControllerTouchpadEvent;     ///< Game Controller touchpad event data
-        using ControllerSensor = SDL_ControllerSensorEvent;         ///< Game Controller sensor event data
-        using AudioDevice = SDL_AudioDeviceEvent;                   ///< Audio device event data
-        using Sensor = SDL_SensorEvent;                             ///< Sensor event data
-        using Quit = SDL_QuitEvent;                                 ///< Quit request event data
-        using User = SDL_UserEvent;                                 ///< Custom event data
-        using SysWM = SDL_SysWMEvent;                               ///< System dependent window event data
-        using TouchFinger = SDL_TouchFingerEvent;                   ///< Touch finger event data
-        using MultiGesture = SDL_MultiGestureEvent;                 ///< Gesture event data
-        using DollarGesture = SDL_DollarGestureEvent;               ///< Gesture event data
-        using Drop = SDL_DropEvent;                                 ///< Drag and drop event data
+        using Common                = SDL_CommonEvent;                  ///< Common event data
+        using Display               = SDL_DisplayEvent;                 ///< Display event data
+        using Window                = SDL_WindowEvent;                  ///< Window event data
+        using Keyboard              = SDL_KeyboardEvent;                ///< Keyboard event data
+        using TextEditing           = SDL_TextEditingEvent;             ///< Text editing event data
+        using TextEditingExt        = SDL_TextEditingExtEvent;          ///< Extended text editing event data
+        using TextInput             = SDL_TextInputEvent;               ///< Text input event data
+        using MouseMotion           = SDL_MouseMotionEvent;             ///< Mouse motion event data
+        using MouseButton           = SDL_MouseButtonEvent;             ///< Mouse button event data
+        using MouseWheel            = SDL_MouseWheelEvent;              ///< Mouse wheel event data
+        using JoyAxis               = SDL_JoyAxisEvent;                 ///< Joystick axis event data
+        using JoyBall               = SDL_JoyBallEvent;                 ///< Joystick ball event data
+        using JoyHat                = SDL_JoyHatEvent;                  ///< Joystick hat event data
+        using JoyButton             = SDL_JoyButtonEvent;               ///< Joystick button event data
+        using JoyDevice             = SDL_JoyDeviceEvent;               ///< Joystick device change event data
+        using JoyBattery            = SDL_JoyBatteryEvent;              ///< Joystick battery event data
+        using ControllerAxis        = SDL_ControllerAxisEvent;          ///< Game Controller axis event data
+        using ControllerButton      = SDL_ControllerButtonEvent;        ///< Game Controller button event data
+        using ControllerDevice      = SDL_ControllerDeviceEvent;        ///< Game Controller device event data
+        using ControllerTouchpad    = SDL_ControllerTouchpadEvent;      ///< Game Controller touchpad event data
+        using ControllerSensor      = SDL_ControllerSensorEvent;        ///< Game Controller sensor event data
+        using AudioDevice           = SDL_AudioDeviceEvent;             ///< Audio device event data
+        using Sensor                = SDL_SensorEvent;                  ///< Sensor event data
+        using Quit                  = SDL_QuitEvent;                    ///< Quit request event data
+        using User                  = SDL_UserEvent;                    ///< Custom event data
+        using SysWM                 = SDL_SysWMEvent;                   ///< System dependent window event data
+        using TouchFinger           = SDL_TouchFingerEvent;             ///< Touch finger event data
+        using MultiGesture          = SDL_MultiGestureEvent;            ///< Gesture event data
+        using DollarGesture         = SDL_DollarGestureEvent;           ///< Gesture event data
+        using Drop                  = SDL_DropEvent;                    ///< Drag and drop event data
 
       public:
         enum class Type : Uint32
@@ -71,7 +71,7 @@ namespace nexus { namespace core {
 
             // These application events have special meaning on iOS, see sdl/README-ios.md for details
 
-            Terminating                = SDL_APP_TERMINATING,          /**< The application is being terminated by the OS
+            Teraminating                = SDL_APP_TERMINATING,          /**< The application is being terminated by the OS
                                                                                 Called on iOS in applicationWillTerminate()
                                                                                 Called on Android in onDestroy()
                                                                         */
