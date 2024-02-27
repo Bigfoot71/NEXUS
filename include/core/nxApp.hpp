@@ -209,7 +209,7 @@ namespace _core_impl {
                 case Event::Type::ControllerTouchPadUp:     state.OnControllerTouchPadUp(event->ctouchpad);     break;
                 case Event::Type::ControllerSensorUpdate:   state.OnControllerSensorUpdate(event->csensor);     break;
                 case Event::Type::FingerDown:               state.OnFingerDown(event->tfinger);                 break;
-                case Event::Type::FingerUp:                 state.OnFingerDown(event->tfinger);                 break;
+                case Event::Type::FingerUp:                 state.OnFingerUp(event->tfinger);                   break;
                 case Event::Type::FingerMotion:             state.OnFingerMotion(event->tfinger);               break;
                 case Event::Type::DollarGesture:            state.OnDollarGesture(event->dgesture);             break;
                 case Event::Type::DollarRecord:             state.OnDollarRecord(event->dgesture);              break;
@@ -224,7 +224,7 @@ namespace _core_impl {
                 case Event::Type::SensorUpdate:             state.OnSensorUpdate(event->sensor);                break;
                 case Event::Type::RenderTargetReset:        state.OnRenderTargetReset();                        break;
                 case Event::Type::RenderDeviceReset:        state.OnRenderDeviceReset();                        break;
-                case Event::Type::Teraminating:             state.OnTerminating();                              break;
+                case Event::Type::Terminating:              state.OnTerminating();                              break;
                 case Event::Type::LowMemory:                state.OnLowMemory();                                break;
                 case Event::Type::WillEnterBackground:      state.OnWillEnterBackground();                      break;
                 case Event::Type::DidEnterBackground:       state.OnDidEnterBackground();                       break;
