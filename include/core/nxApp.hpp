@@ -188,7 +188,7 @@ namespace _core_impl {
                 case Event::Type::TextEditingExt:           state.OnTextEditingExt(event->editExt);             break;
                 case Event::Type::MouseMotion:              state.OnMouseMotion(event->motion);                 break;
                 case Event::Type::MouseButtonDown:          state.OnMouseButtonDown(event->button);             break;
-                case Event::Type::MouseButtonUp:            state.OnMouseButtonDown(event->button);             break;
+                case Event::Type::MouseButtonUp:            state.OnMouseButtonUp(event->button);               break;
                 case Event::Type::MouseButtonWheel:         state.OnMouseButtonWheel(event->wheel);             break;
                 case Event::Type::JoyAxisMotion:            state.OnJoyAxisMotion(event->jaxis);                break;
                 case Event::Type::JoyBallMotion:            state.OnJoyBallMotion(event->jball);                break;
