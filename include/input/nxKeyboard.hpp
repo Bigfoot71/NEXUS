@@ -747,7 +747,7 @@ namespace nexus { namespace input {
     /**
      * @brief Get a snapshot of the current state of the keyboard.
      *
-     * This function retrieves a snapshot of the current state of the keyboard as an array of scancodes.
+     * This function retrieves a snapshot of the current state of the keyboard as an array for each scancodes.
      * The array contains a 1 if a key is pressed and 0 if it is not. The indexes into this array correspond to SDL_Scancode values.
      * The pointer returned is a pointer to an internal SDL array, and it remains valid for the entire lifetime of the application.
      * The caller should not free the memory associated with this pointer.
@@ -755,9 +755,9 @@ namespace nexus { namespace input {
      * @param lenArray An optional pointer to store the length of the state array. If provided, the length will be written to this pointer.
      * @return A pointer to the keyboard state array.
      */
-    inline const Scancode* GetKeyboardState(int* lenArray = nullptr)
+    inline const Uint8* GetKeyboardState(int* lenArray = nullptr)
     {
-        return reinterpret_cast<const Scancode*>(SDL_GetKeyboardState(lenArray));
+        return SDL_GetKeyboardState(lenArray);
     }
 
     /**
