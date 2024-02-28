@@ -19,6 +19,8 @@
 
 #include "gfx/nxSurface.hpp"
 
+#include "SDL_image.h"
+#include "core/nxFileFormat.hpp"
 #include "shape/2D/nxRectangle.hpp"
 #include "shape/2D/nxTriangle.hpp"
 #include "shape/2D/nxPolygon.hpp"
@@ -559,14 +561,31 @@ gfx::Surface& gfx::Surface::FlipVertical()
     return *this;
 }
 
-void gfx::Surface::SaveImage(const std::string& filePath) const
+void gfx::Surface::SaveImage(const std::string& filePath, core::ImageFormat format, int quality) const
 {
-    if (!surface)
+    int result = 0;
+
+    switch (format)
     {
-        throw core::NexusException("gfx::Surface", "Surface is not valid.");
+        case core::ImageFormat::BMP: {
+            result = SDL_SaveBMP(surface, filePath.c_str());
+        } break;
+
+        case core::ImageFormat::JPG: {
+            result = IMG_SaveJPG(surface, filePath.c_str(), quality);
+        } break;
+
+        case core::ImageFormat::PNG: {
+            result = IMG_SavePNG(surface, filePath.c_str());
+        } break;
+
+        default: {
+            throw core::NexusException("gfx::Surface",
+                "Export format not supported.");
+        } break;
     }
 
-    if (IMG_SavePNG(surface, filePath.c_str()) != 0)
+    if (result < 0)
     {
         throw core::NexusException("gfx::Surface", "Error saving image.",
             "SDL_image", IMG_GetError());

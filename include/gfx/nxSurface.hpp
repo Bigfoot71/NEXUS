@@ -901,11 +901,19 @@ namespace nexus { namespace gfx {
         /**
          * @brief Save the Surface as an image file.
          *
-         * This function saves the current Surface as an image file (e.g., PNG) with the specified file path.
+         * This function saves the current Surface as an image file with the specified file path.
+         * The image format is determined by the 'format' parameter, which can be ImageFormat::PNG,
+         * ImageFormat::BMP, or ImageFormat::JPG.
+         *
+         * The 'quality' parameter is only applicable when saving in JPG format, and it represents the image quality level.
+         * For JPG, quality values in the range [0..33] indicate the lowest quality, [34..66] represent medium quality, and
+         * [67..100] represent the highest quality.
          *
          * @param filePath The path to the image file where the Surface will be saved.
+         * @param format The image format to save the Surface as (PNG, BMP, or JPG) (default is PNG).
+         * @param quality The image quality (applicable only for JPG format) (default quality is max [100]).
          */
-        void SaveImage(const std::string& filePath) const;
+        void SaveImage(const std::string& filePath, core::ImageFormat format = core::ImageFormat::PNG, int quality = 100) const;
 
         /**
          * @brief Locks the Surface to allow direct pixel manipulation.
