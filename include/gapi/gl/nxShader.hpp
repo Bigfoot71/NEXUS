@@ -90,14 +90,21 @@ namespace _gl_impl
          * @param locIndex The location index of the uniform.
          * @param mat The matrix value to send.
          */
-        void SendValue(int locIndex, const nexus::math::Mat4& mat);
+        void SendMatrix(int locIndex, const nexus::math::Mat4& mat);
 
         /**
          * @brief Sends a texture value to a uniform in the shader program.
          * @param locIndex The location index of the uniform.
          * @param texture The texture to send.
          */
-        void SendValue(int locIndex, const nexus::gl::Texture& texture);
+        void SendTexture(int locIndex, const nexus::gl::Texture& texture);
+
+        /**
+         * @brief Sends a texture ID value to a uniform in the shader program.
+         * @param locIndex The location index of the uniform.
+         * @param textureID The texture ID to send.
+         */
+        void SendTexture(int locIndex, Uint32 textureID);
 
         /**
          * @brief Begins using the shader program.

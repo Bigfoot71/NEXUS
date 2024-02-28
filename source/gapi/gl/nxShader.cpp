@@ -145,7 +145,7 @@ void _gl_impl::Shader::SendValue(int locIndex, const void *value, gl::ShaderUnif
     }
 }
 
-void _gl_impl::Shader::SendValue(int locIndex, const math::Mat4& mat)
+void _gl_impl::Shader::SendMatrix(int locIndex, const math::Mat4& mat)
 {
     if (locIndex > -1)
     {
@@ -154,12 +154,21 @@ void _gl_impl::Shader::SendValue(int locIndex, const math::Mat4& mat)
     }
 }
 
-void _gl_impl::Shader::SendValue(int locIndex, const gl::Texture& texture)
+void _gl_impl::Shader::SendTexture(int locIndex, const gl::Texture& texture)
 {
     if (locIndex > -1)
     {
         ctx.EnableShader(id);
         ctx.SetUniformSampler(locIndex, texture->GetID());
+    }
+}
+
+void _gl_impl::Shader::SendTexture(int locIndex, Uint32 textureID)
+{
+    if (locIndex > -1)
+    {
+        ctx.EnableShader(id);
+        ctx.SetUniformSampler(locIndex, textureID);
     }
 }
 

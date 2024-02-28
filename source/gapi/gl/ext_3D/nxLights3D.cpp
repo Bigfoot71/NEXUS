@@ -566,7 +566,7 @@ void gl::Light3D::EndShadowCast()
 
 void gl::Light3D::UpdateMatrix()
 {
-    (*modelShader)->SendValue(locsLightModelShader[LocLightMatrix], caster.GetViewMatrix() * caster.GetProjectionMatrix());
+    (*modelShader)->SendMatrix(locsLightModelShader[LocLightMatrix], caster.GetViewMatrix() * caster.GetProjectionMatrix());
 }
 
 void gl::Light3D::SetPosition(const math::Vec3& position, bool updateMatrix)
@@ -778,7 +778,7 @@ void gl::Lights3D::ShadowCastModel(Model& model, const math::Vec3& position, con
 void gl::Lights3D::DrawModel(Model& model, const math::Vec3& position, const math::Vec3& rotationAxis, float rotationAngle, const math::Vec3& scale, const gfx::Color& tint)
 {
     math::Mat4 matTransform = model->transform * math::Mat4::Transform(position, scale, rotationAxis, math::DegToRad(rotationAngle));
-    if (shadowMap) modelShader->SendValue(locsLightModelShader[LocShadowMap], shadowMap->GetDepthTexture());
+    if (shadowMap) modelShader->SendTexture(locsLightModelShader[LocShadowMap], shadowMap->GetDepthTexture());
 
     for (int i = 0; i < model->meshes.size(); i++)
     {
