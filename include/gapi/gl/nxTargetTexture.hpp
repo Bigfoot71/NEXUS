@@ -36,11 +36,11 @@ namespace _gl_impl
     class TargetTexture : public nexus::gl::Contextual
     {
       private:
-        Texture                 texture;            ///< Color buffer attachment texture
-        Texture                 depth;              ///< Depth buffer attachment texture
-        nexus::shape2D::Rectangle  prevViewport;       ///< Previous viewport to restore
-        Uint32                  id;                 ///< OpenGL framebuffer object id
-        bool                    active;             ///< Indicates whether the target texture is active.
+        Texture                     texture;            ///< Color buffer attachment texture
+        Texture                     depth;              ///< Depth buffer attachment texture
+        nexus::shape2D::Rectangle   prevViewport;       ///< Previous viewport to restore
+        Uint32                      id;                 ///< OpenGL framebuffer object id
+        bool                        active;             ///< Indicates whether the target texture is active.
 
       public:
         /**
@@ -210,6 +210,18 @@ namespace _gl_impl
          * @return The OpenGL framebuffer object ID.
          */
         Uint32 GetID() const { return id; }
+
+        /**
+         * @brief Returns the OpenGL texture ID attached to this framebuffer.
+         * @return The OpenGL texture ID attached to this framebuffer.
+         */
+        Uint32 GetTextureID() const { return texture.GetID(); }
+
+        /**
+         * @brief Returns the OpenGL texture ID of the depth attachment of this framebuffer.
+         * @return The OpenGL texture ID of the depth attachment of this framebuffer.
+         */
+        Uint32 GetDepthTextureID() const { return depth.GetID(); }
     };
 }
 
