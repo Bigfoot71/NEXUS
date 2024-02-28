@@ -158,7 +158,7 @@ void gfx::Surface::LoadFromMemory(const std::vector<Uint8>& data, core::ImageFor
         case core::ImageFormat::XCF:    temp = IMG_LoadXCF_RW(rw);          break;
         case core::ImageFormat::XPM:    temp = IMG_LoadXPM_RW(rw);          break;
         case core::ImageFormat::SVG:    temp = IMG_LoadSVG_RW(rw);          break;
-        default:                            temp = IMG_Load_RW(rw, 0);      break;
+        default:                        temp = IMG_Load_RW(rw, 0);          break;
     }
 
     SDL_RWclose(rw);
@@ -350,7 +350,7 @@ gfx::Surface gfx::Surface::Crop(shape2D::Rectangle areaToKeep) const
     return newSurface;
 }
 
-void gfx::Surface::Resize(int newWidth, int newHeight)
+gfx::Surface& gfx::Surface::Resize(int newWidth, int newHeight)
 {
     if (!surface) throw core::NexusException("gfx::Surface", "Surface is not created yet. Cannot resize.");
 
@@ -363,12 +363,14 @@ void gfx::Surface::Resize(int newWidth, int newHeight)
 
     SDL_FreeSurface(surface);
     surface = newSurface;
+
+    return *this;
 }
 
-void gfx::Surface::ResizeCanvas(int newWidth, int newHeight, int offsetX, int offsetY, const Color& background)
+gfx::Surface& gfx::Surface::ResizeCanvas(int newWidth, int newHeight, int offsetX, int offsetY, const Color& background)
 {
     if (!surface) throw core::NexusException("gfx::Surface", "Surface is not created yet. Cannot resize.");
-    if (newWidth == surface->w || newHeight == surface->h) return;
+    if (newWidth == surface->w || newHeight == surface->h) return *this;
 
     SDL_Surface *newSurface = SDL_CreateRGBSurface(
         surface->flags, newWidth, newHeight, surface->format->BitsPerPixel,
@@ -406,9 +408,11 @@ void gfx::Surface::ResizeCanvas(int newWidth, int newHeight, int offsetX, int of
 
     SDL_FreeSurface(surface);
     surface = newSurface;
+
+    return *this;
 }
 
-void gfx::Surface::ToPOT(const Color& background)
+gfx::Surface& gfx::Surface::ToPOT(const Color& background)
 {
     if (!surface)
     {
@@ -422,6 +426,137 @@ void gfx::Surface::ToPOT(const Color& background)
     {
         ResizeCanvas(potWidth, potHeight, 0, 0, background);
     }
+
+    return *this;
+}
+
+gfx::Surface& gfx::Surface::Rotate(float angle)
+{
+    if (!surface) return *this;
+
+    angle *= math::Deg2Rad;
+
+    Uint8 bytesPerPixel = surface->format->BytesPerPixel;
+    Uint8 *originalPixels = static_cast<Uint8*>(surface->pixels);
+
+    Surface rotatedSurface;
+    rotatedSurface.Create(surface->h, surface->w, GetPixelFormat());
+
+    Uint8 *rotatedPixels = static_cast<Uint8*>(rotatedSurface.surface->pixels);
+
+    float sinRadius = std::sin(angle);
+    float cosRadius = std::cos(angle);
+
+    int width = static_cast<int>(std::abs(surface->w*cosRadius) + std::abs(surface->h*sinRadius));
+    int height = static_cast<int>(std::abs(surface->h*cosRadius) + std::abs(surface->w*sinRadius));
+
+    for (int y = 0; y < height; y++)
+    {
+        for (int x = 0; x < width; x++)
+        {
+            float oldX = ((x - width/2.0f)*cosRadius + (y - height/2.0f)*sinRadius) + surface->w/2.0f;
+            float oldY = ((y - height/2.0f)*cosRadius - (x - width/2.0f)*sinRadius) + surface->h/2.0f;
+
+            if ((oldX >= 0) && (oldX < surface->w) && (oldY >= 0) && (oldY < surface->h))
+            {
+                int x1 = std::floor(oldX);
+                int y1 = std::floor(oldY);
+                int x2 = std::min(x1 + 1, surface->w - 1);
+                int y2 = std::min(y1 + 1, surface->h - 1);
+
+                float px = oldX - x1;
+                float py = oldY - y1;
+
+                for (int i = 0; i < bytesPerPixel; i++)
+                {
+                    float f1 = originalPixels[(y1*surface->w + x1)*bytesPerPixel + i];
+                    float f2 = originalPixels[(y1*surface->w + x2)*bytesPerPixel + i];
+                    float f3 = originalPixels[(y2*surface->w + x1)*bytesPerPixel + i];
+                    float f4 = originalPixels[(y2*surface->w + x2)*bytesPerPixel + i];
+
+                    rotatedPixels[(y*width + x)*bytesPerPixel + i] = static_cast<Uint8>(
+                        f1*(1 - px)*(1 - py) + f2*px*(1 - py) + f3*(1 - px)*py + f4*px*py);
+                }
+            }
+        }
+
+        surface = std::exchange(rotatedSurface.surface, nullptr);
+    }
+
+    return *this;
+}
+
+gfx::Surface& gfx::Surface::RotateCCW()
+{
+    if (!surface) return *this;
+
+    Uint8 bytesPerPixel = surface->format->BytesPerPixel;
+    Uint8* originalPixels = static_cast<Uint8*>(surface->pixels);
+
+    Surface rotatedSurface;
+    rotatedSurface.Create(surface->h, surface->w, GetPixelFormat());
+
+    Uint8* rotatedPixels = static_cast<Uint8*>(rotatedSurface.surface->pixels);
+
+    for (int y = 0; y < surface->h; y++)
+    {
+        for (int x = 0; x < surface->w; x++)
+        {
+            std::memcpy(rotatedPixels + (x*surface->h + y)*bytesPerPixel, originalPixels + (y*surface->w + (surface->w - x - 1))*bytesPerPixel, bytesPerPixel);
+        }
+    }
+
+    surface = std::exchange(rotatedSurface.surface, nullptr);
+
+    return *this;
+}
+
+gfx::Surface& gfx::Surface::FlipHorizontal()
+{
+    if (!surface) return *this;
+
+    Uint8 bytesPerPixel = surface->format->BytesPerPixel;
+    Uint8 *originalPixels = static_cast<Uint8*>(surface->pixels);
+
+    Surface flippedSurface;
+    flippedSurface.Create(surface->h, surface->w, GetPixelFormat());
+
+    Uint8 *flippedPixels = static_cast<Uint8*>(flippedSurface.surface->pixels);
+
+    for (int y = 0; y < surface->h; y++)
+    {
+        for (int x = 0; x < surface->w; x++)
+        {
+            std::memcpy(flippedPixels + (y*surface->w + x)*bytesPerPixel, originalPixels + (y*surface->w + (surface->w - 1 - x))*bytesPerPixel, bytesPerPixel);
+        }
+    }
+
+    surface = std::exchange(flippedSurface.surface, nullptr);
+
+    return *this;
+}
+
+gfx::Surface& gfx::Surface::FlipVertical()
+{
+    if (!surface) return *this;
+
+    const Uint8 bytesPerPixel = surface->format->BytesPerPixel;
+    const Uint8 *originalPixels = static_cast<Uint8*>(surface->pixels);
+
+    Surface flippedSurface;
+    flippedSurface.Create(surface->h, surface->w, GetPixelFormat());
+
+    Uint8 *flippedPixels = static_cast<Uint8*>(flippedSurface.surface->pixels);
+
+    for (int i = (surface->h - 1), offsetSize = 0; i >= 0; i--)
+    {
+        std::memcpy(flippedPixels + offsetSize, originalPixels + i * surface->w * bytesPerPixel, surface->w * bytesPerPixel);
+        offsetSize += surface->w * bytesPerPixel;
+    }
+
+    surface = std::exchange(flippedSurface.surface, nullptr);
+
+    return *this;
 }
 
 void gfx::Surface::SaveImage(const std::string& filePath) const
@@ -509,133 +644,13 @@ bool gfx::Surface::SetFrag(const math::Vec2& uv, const gfx::Color& color) const
     return false;
 }
 
-void gfx::Surface::Rotate(float angle)
-{
-    if (!surface) return;
-
-    angle *= math::Deg2Rad;
-
-    Uint8 bytesPerPixel = surface->format->BytesPerPixel;
-    Uint8 *originalPixels = static_cast<Uint8*>(surface->pixels);
-
-    Surface rotatedSurface;
-    rotatedSurface.Create(surface->h, surface->w, GetPixelFormat());
-
-    Uint8 *rotatedPixels = static_cast<Uint8*>(rotatedSurface.surface->pixels);
-
-    float sinRadius = std::sin(angle);
-    float cosRadius = std::cos(angle);
-
-    int width = static_cast<int>(std::abs(surface->w*cosRadius) + std::abs(surface->h*sinRadius));
-    int height = static_cast<int>(std::abs(surface->h*cosRadius) + std::abs(surface->w*sinRadius));
-
-    for (int y = 0; y < height; y++)
-    {
-        for (int x = 0; x < width; x++)
-        {
-            float oldX = ((x - width/2.0f)*cosRadius + (y - height/2.0f)*sinRadius) + surface->w/2.0f;
-            float oldY = ((y - height/2.0f)*cosRadius - (x - width/2.0f)*sinRadius) + surface->h/2.0f;
-
-            if ((oldX >= 0) && (oldX < surface->w) && (oldY >= 0) && (oldY < surface->h))
-            {
-                int x1 = std::floor(oldX);
-                int y1 = std::floor(oldY);
-                int x2 = std::min(x1 + 1, surface->w - 1);
-                int y2 = std::min(y1 + 1, surface->h - 1);
-
-                float px = oldX - x1;
-                float py = oldY - y1;
-
-                for (int i = 0; i < bytesPerPixel; i++)
-                {
-                    float f1 = originalPixels[(y1*surface->w + x1)*bytesPerPixel + i];
-                    float f2 = originalPixels[(y1*surface->w + x2)*bytesPerPixel + i];
-                    float f3 = originalPixels[(y2*surface->w + x1)*bytesPerPixel + i];
-                    float f4 = originalPixels[(y2*surface->w + x2)*bytesPerPixel + i];
-
-                    rotatedPixels[(y*width + x)*bytesPerPixel + i] = static_cast<Uint8>(
-                        f1*(1 - px)*(1 - py) + f2*px*(1 - py) + f3*(1 - px)*py + f4*px*py);
-                }
-            }
-        }
-
-        surface = std::exchange(rotatedSurface.surface, nullptr);
-    }
-}
-
-void gfx::Surface::RotateCCW()
-{
-    if (!surface) return;
-
-    Uint8 bytesPerPixel = surface->format->BytesPerPixel;
-    Uint8* originalPixels = static_cast<Uint8*>(surface->pixels);
-
-    Surface rotatedSurface;
-    rotatedSurface.Create(surface->h, surface->w, GetPixelFormat());
-
-    Uint8* rotatedPixels = static_cast<Uint8*>(rotatedSurface.surface->pixels);
-
-    for (int y = 0; y < surface->h; y++)
-    {
-        for (int x = 0; x < surface->w; x++)
-        {
-            std::memcpy(rotatedPixels + (x*surface->h + y)*bytesPerPixel, originalPixels + (y*surface->w + (surface->w - x - 1))*bytesPerPixel, bytesPerPixel);
-        }
-    }
-
-    surface = std::exchange(rotatedSurface.surface, nullptr);
-}
-
-void gfx::Surface::FlipHorizontal()
-{
-    if (!surface) return;
-
-    Uint8 bytesPerPixel = surface->format->BytesPerPixel;
-    Uint8 *originalPixels = static_cast<Uint8*>(surface->pixels);
-
-    Surface flippedSurface;
-    flippedSurface.Create(surface->h, surface->w, GetPixelFormat());
-
-    Uint8 *flippedPixels = static_cast<Uint8*>(flippedSurface.surface->pixels);
-
-    for (int y = 0; y < surface->h; y++)
-    {
-        for (int x = 0; x < surface->w; x++)
-        {
-            std::memcpy(flippedPixels + (y*surface->w + x)*bytesPerPixel, originalPixels + (y*surface->w + (surface->w - 1 - x))*bytesPerPixel, bytesPerPixel);
-        }
-    }
-
-    surface = std::exchange(flippedSurface.surface, nullptr);
-}
-
-void gfx::Surface::FlipVertical()
-{
-    if (!surface) return;
-
-    const Uint8 bytesPerPixel = surface->format->BytesPerPixel;
-    const Uint8 *originalPixels = static_cast<Uint8*>(surface->pixels);
-
-    Surface flippedSurface;
-    flippedSurface.Create(surface->h, surface->w, GetPixelFormat());
-
-    Uint8 *flippedPixels = static_cast<Uint8*>(flippedSurface.surface->pixels);
-
-    for (int i = (surface->h - 1), offsetSize = 0; i >= 0; i--)
-    {
-        std::memcpy(flippedPixels + offsetSize, originalPixels + i * surface->w * bytesPerPixel, surface->w * bytesPerPixel);
-        offsetSize += surface->w * bytesPerPixel;
-    }
-
-    surface = std::exchange(flippedSurface.surface, nullptr);
-}
-
-void gfx::Surface::Fill(const gfx::Color& color) const
+const gfx::Surface& gfx::Surface::Fill(const gfx::Color& color) const
 {
     SDL_FillRect(surface, nullptr, color);
+    return *this;
 }
 
-void gfx::Surface::DrawGradientLinear(shape2D::Rectangle dst, float direction, const gfx::Color& start, const gfx::Color& end) const
+const gfx::Surface& gfx::Surface::DrawGradientLinear(shape2D::Rectangle dst, float direction, const gfx::Color& start, const gfx::Color& end) const
 {
     dst.SetPosition(dst.GetPosition().Clamp({ 0, 0 }, GetSize()));
     dst.SetSize(dst.GetSize().Clamp({ 0, 0 }, GetSize()));
@@ -658,9 +673,11 @@ void gfx::Surface::DrawGradientLinear(shape2D::Rectangle dst, float direction, c
             SetPixelUnsafe(x, y, nEnd * factor + nStart * (1.0f - factor));
         }
     }
+
+    return *this;
 }
 
-void gfx::Surface::DrawGradientRadial(shape2D::Rectangle dst, float density, const gfx::Color& inner, const gfx::Color& outer) const
+const gfx::Surface& gfx::Surface::DrawGradientRadial(shape2D::Rectangle dst, float density, const gfx::Color& inner, const gfx::Color& outer) const
 {
     dst.SetPosition(dst.GetPosition().Clamp({ 0, 0 }, GetSize()));
     dst.SetSize(dst.GetSize().Clamp({ 0, 0 }, GetSize()));
@@ -682,9 +699,11 @@ void gfx::Surface::DrawGradientRadial(shape2D::Rectangle dst, float density, con
             SetPixelUnsafe(x, y, nOuter * factor + nInner * (1.0f - factor));
         }
     }
+
+    return *this;
 }
 
-void gfx::Surface::DrawGradientSquare(shape2D::Rectangle dst, float density, const gfx::Color& inner, const gfx::Color& outer) const
+const gfx::Surface& gfx::Surface::DrawGradientSquare(shape2D::Rectangle dst, float density, const gfx::Color& inner, const gfx::Color& outer) const
 {
     dst.SetPosition(dst.GetPosition().Clamp({ 0, 0 }, GetSize()));
     dst.SetSize(dst.GetSize().Clamp({ 0, 0 }, GetSize()));
@@ -716,9 +735,11 @@ void gfx::Surface::DrawGradientSquare(shape2D::Rectangle dst, float density, con
             SetPixelUnsafe(x, y, nOuter * factor + nInner * (1.0f - factor));
         }
     }
+
+    return *this;
 }
 
-void gfx::Surface::DrawChecked(shape2D::Rectangle dst, int checksX, int checksY, const gfx::Color& col1, const gfx::Color& col2) const
+const gfx::Surface& gfx::Surface::DrawChecked(shape2D::Rectangle dst, int checksX, int checksY, const gfx::Color& col1, const gfx::Color& col2) const
 {
     dst.SetPosition(dst.GetPosition().Clamp({ 0, 0 }, GetSize()));
     dst.SetSize(dst.GetSize().Clamp({ 0, 0 }, GetSize()));
@@ -732,9 +753,11 @@ void gfx::Surface::DrawChecked(shape2D::Rectangle dst, int checksX, int checksY,
         }
         i++;
     }
+
+    return *this;
 }
 
-void gfx::Surface::DrawWhiteNoise(shape2D::Rectangle dst, float factor) const
+const gfx::Surface& gfx::Surface::DrawWhiteNoise(shape2D::Rectangle dst, float factor) const
 {
     dst.SetPosition(dst.GetPosition().Clamp({ 0, 0 }, GetSize()));
     dst.SetSize(dst.GetSize().Clamp({ 0, 0 }, GetSize()));
@@ -748,9 +771,11 @@ void gfx::Surface::DrawWhiteNoise(shape2D::Rectangle dst, float factor) const
             SetPixelUnsafe(x, y, gen.Random(0.0f, 1.0f) < factor ? gfx::White : gfx::Black);
         }
     }
+
+    return *this;
 }
 
-void gfx::Surface::DrawCellular(shape2D::Rectangle dst, int tileSize) const
+const gfx::Surface& gfx::Surface::DrawCellular(shape2D::Rectangle dst, int tileSize) const
 {
     dst.SetPosition(dst.GetPosition().Clamp({ 0, 0 }, GetSize()));
     dst.SetSize(dst.GetSize().Clamp({ 0, 0 }, GetSize()));
@@ -809,9 +834,11 @@ void gfx::Surface::DrawCellular(shape2D::Rectangle dst, int tileSize) const
     }
 
     delete[] seeds;
+
+    return *this;
 }
 
-void gfx::Surface::DrawLine(int x1, int y1, int x2, int y2, const gfx::Color& color) const
+const gfx::Surface& gfx::Surface::DrawLine(int x1, int y1, int x2, int y2, const gfx::Color& color) const
 {
     const float dx = x2 - x1;
     const float dy = y2 - y1;
@@ -819,7 +846,7 @@ void gfx::Surface::DrawLine(int x1, int y1, int x2, int y2, const gfx::Color& co
     if (dx == 0 && dy == 0)
     {
         SetPixel(x1, y1, color);
-        return;
+        return *this;
     }
 
     const float adx = std::fabs(dx);
@@ -865,61 +892,69 @@ void gfx::Surface::DrawLine(int x1, int y1, int x2, int y2, const gfx::Color& co
             SetPixel(x, y, color);
         }
     }
+
+    return *this;
 }
 
-void gfx::Surface::DrawLine(const math::Vec2& start, const math::Vec2& end, const Color& color) const
+const gfx::Surface& gfx::Surface::DrawLine(const math::Vec2& start, const math::Vec2& end, const Color& color) const
 {
-    DrawLine(start.x, start.y, end.x, end.y, color);
+    return DrawLine(start.x, start.y, end.x, end.y, color);
 }
 
-void gfx::Surface::DrawLine(const shape2D::Line& line, const gfx::Color& color) const
+const gfx::Surface& gfx::Surface::DrawLine(const shape2D::Line& line, const gfx::Color& color) const
 {
-    DrawLine(std::round(line.start.x), std::round(line.start.y), std::round(line.end.x), std::round(line.end.y), color);
+    return DrawLine(std::round(line.start.x), std::round(line.start.y), std::round(line.end.x), std::round(line.end.y), color);
 }
 
-void gfx::Surface::DrawRectangle(int x, int y, int w, int h, const Color& color) const
+const gfx::Surface& gfx::Surface::DrawRectangle(int x, int y, int w, int h, const Color& color) const
 {
     shape2D::Rectangle rect(x, y, w, h);
     SDL_FillRect(surface, &rect, color.ToUint32(surface->format));
+    return *this;
 }
 
-void gfx::Surface::DrawRectangle(const shape2D::Rectangle& rect, const Color& color) const
+const gfx::Surface& gfx::Surface::DrawRectangle(const shape2D::Rectangle& rect, const Color& color) const
 {
     SDL_FillRect(surface, &rect, color.ToUint32(surface->format));
+    return *this;
 }
 
-void gfx::Surface::DrawRectangle(const shape2D::RectangleF& rect, const Color& color) const
+const gfx::Surface& gfx::Surface::DrawRectangle(const shape2D::RectangleF& rect, const Color& color) const
 {
-    DrawRectangle(shape2D::Rectangle(std::round(rect.x), std::round(rect.y), std::round(rect.w), std::round(rect.h)), color);
+    return DrawRectangle(shape2D::Rectangle(std::round(rect.x), std::round(rect.y), std::round(rect.w), std::round(rect.h)), color);
 }
 
-void gfx::Surface::DrawRectangleLines(int x, int y, int w, int h, int thick, const Color& color) const
+const gfx::Surface& gfx::Surface::DrawRectangleLines(int x, int y, int w, int h, int thick, const Color& color) const
 {
-    DrawRectangleLines(shape2D::Rectangle{ x, y, w, h }, thick, color);
+    return DrawRectangleLines(shape2D::Rectangle{ x, y, w, h }, thick, color);
 }
 
-void gfx::Surface::DrawRectangleLines(const shape2D::Rectangle& rect, int thick, const Color& color) const
+const gfx::Surface& gfx::Surface::DrawRectangleLines(const shape2D::Rectangle& rect, int thick, const Color& color) const
 {
     DrawRectangle(shape2D::Rectangle(rect.x, rect.y, rect.w, thick), color);
     DrawRectangle(shape2D::Rectangle(rect.x, rect.y + thick, thick, rect.h - thick*2), color);
     DrawRectangle(shape2D::Rectangle(rect.x + rect.w - thick, rect.y + thick, thick, rect.h - thick*2), color);
     DrawRectangle(shape2D::Rectangle(rect.x, rect.y + rect.h - thick, rect.w, thick), color);
+
+    return *this;
 }
 
-void gfx::Surface::DrawRectangleLines(const shape2D::RectangleF& rect, int thick, const Color& color) const
+const gfx::Surface& gfx::Surface::DrawRectangleLines(const shape2D::RectangleF& rect, int thick, const Color& color) const
 {
     DrawRectangle(shape2D::RectangleF(rect.x, rect.y, rect.w, thick), color);
     DrawRectangle(shape2D::RectangleF(rect.x, rect.y + thick, thick, rect.h - thick*2), color);
     DrawRectangle(shape2D::RectangleF(rect.x + rect.w - thick, rect.y + thick, thick, rect.h - thick*2), color);
     DrawRectangle(shape2D::RectangleF(rect.x, rect.y + rect.h - thick, rect.w, thick), color);
+
+    return *this;
 }
 
-void gfx::Surface::DrawAABB(const shape2D::AABB& aabb, const Color& color) const
+const gfx::Surface& gfx::Surface::DrawAABB(const shape2D::AABB& aabb, const Color& color) const
 {
-    DrawRectangleLines(shape2D::RectangleF((aabb.min + aabb.max) * 0.5f, aabb.max - aabb.min), 1, color);
+    return DrawRectangleLines(shape2D::RectangleF((aabb.min + aabb.max) * 0.5f, aabb.max - aabb.min), 1, color);
 }
 
-void gfx::Surface::DrawCircle(int cx, int cy, int radius, const Color& color) const
+const gfx::Surface& gfx::Surface::DrawCircle(int cx, int cy, int radius, const Color& color) const
 {
     int x = 0, y = radius;
     int decesionParameter = 3 - 2 * radius;
@@ -942,14 +977,16 @@ void gfx::Surface::DrawCircle(int cx, int cy, int radius, const Color& color) co
             decesionParameter = decesionParameter + 4 * x + 6;
         }
     }
+
+    return *this;
 }
 
-void gfx::Surface::DrawCircle(const shape2D::Circle& circle, const Color& color) const
+const gfx::Surface& gfx::Surface::DrawCircle(const shape2D::Circle& circle, const Color& color) const
 {
-    DrawCircle(std::round(circle.center.x), std::round(circle.center.y), std::round(circle.radius), color);
+    return DrawCircle(std::round(circle.center.x), std::round(circle.center.y), std::round(circle.radius), color);
 }
 
-void gfx::Surface::DrawCircleLines(int cx, int cy, int radius, const Color& color) const
+const gfx::Surface& gfx::Surface::DrawCircleLines(int cx, int cy, int radius, const Color& color) const
 {
     int x = 0, y = radius;
     int decesionParameter = 3 - 2 * radius;
@@ -976,21 +1013,23 @@ void gfx::Surface::DrawCircleLines(int cx, int cy, int radius, const Color& colo
             decesionParameter = decesionParameter + 4 * x + 6;
         }
     }
+
+    return *this;
 }
 
-void gfx::Surface::DrawCircleLines(const shape2D::Circle& circle, const Color& color) const
+const gfx::Surface& gfx::Surface::DrawCircleLines(const shape2D::Circle& circle, const Color& color) const
 {
-    DrawCircleLines(std::round(circle.center.x), std::round(circle.center.y), std::round(circle.radius), color);
+    return DrawCircleLines(std::round(circle.center.x), std::round(circle.center.y), std::round(circle.radius), color);
 }
 
-void gfx::Surface::DrawPolygon(const shape2D::Polygon& poly, const gfx::Color& color) const
+const gfx::Surface& gfx::Surface::DrawPolygon(const shape2D::Polygon& poly, const gfx::Color& color) const
 {
     shape2D::AABB bounds = poly.GetAABB();
 
     bounds.min = bounds.min.Clamp({ 0, 0 }, GetSize());
     bounds.max = bounds.max.Clamp({ 0, 0 }, GetSize());
 
-    if (bounds.min == bounds.max) return;
+    if (bounds.min == bounds.max) return *this;
 
     for (int y = bounds.min.y; y < bounds.max.y; y++)
     {
@@ -1002,28 +1041,32 @@ void gfx::Surface::DrawPolygon(const shape2D::Polygon& poly, const gfx::Color& c
             }
         }
     }
+
+    return *this;
 }
 
-void gfx::Surface::DrawPolygonLines(const shape2D::Polygon& poly, const Color& color) const
+const gfx::Surface& gfx::Surface::DrawPolygonLines(const shape2D::Polygon& poly, const Color& color) const
 {
     for (Uint32 i = 0, j = 1; i < poly.size(); i++)
     {
         DrawLine(poly.GetEdge(i), color);
     }
+
+    return *this;
 }
 
-void gfx::Surface::DrawTriangle(const math::Vec2& v0, const math::Vec2& v1, const math::Vec2& v2, const gfx::Color& color) const
+const gfx::Surface& gfx::Surface::DrawTriangle(const math::Vec2& v0, const math::Vec2& v1, const math::Vec2& v2, const gfx::Color& color) const
 {
-    DrawTriangle({ v0, v1, v2 }, color);
+    return DrawTriangle({ v0, v1, v2 }, color);
 }
 
-void gfx::Surface::DrawTriangle(const shape2D::Triangle& tri, const gfx::Color& color) const
+const gfx::Surface& gfx::Surface::DrawTriangle(const shape2D::Triangle& tri, const gfx::Color& color) const
 {
     shape2D::AABB aabb = tri.GetAABB();
     aabb.min.Clamp({ 0, 0 }, GetSize());
     aabb.max.Clamp({ 0, 0 }, GetSize());
 
-    if (aabb.min == aabb.max) return;
+    if (aabb.min == aabb.max) return *this;
 
     for (int y = aabb.min.y; y < aabb.max.y; y++)
     {
@@ -1035,21 +1078,25 @@ void gfx::Surface::DrawTriangle(const shape2D::Triangle& tri, const gfx::Color& 
             }
         }
     }
+
+    return *this;
 }
 
-void gfx::Surface::DrawTriangleLines(const math::Vec2& v0, const math::Vec2& v1, const math::Vec2& v2, const gfx::Color& color) const
+const gfx::Surface& gfx::Surface::DrawTriangleLines(const math::Vec2& v0, const math::Vec2& v1, const math::Vec2& v2, const gfx::Color& color) const
 {
     DrawLine(v0, v1, color);
     DrawLine(v1, v2, color);
     DrawLine(v2, v0, color);
+
+    return *this;
 }
 
-void gfx::Surface::DrawTriangleLines(const shape2D::Triangle& tri, const gfx::Color& color) const
+const gfx::Surface& gfx::Surface::DrawTriangleLines(const shape2D::Triangle& tri, const gfx::Color& color) const
 {
-    DrawTriangleLines(tri.a, tri.b, tri.c, color);
+    return DrawTriangleLines(tri.a, tri.b, tri.c, color);
 }
 
-void gfx::Surface::DrawTriangleColors(const shape2D::Vertex& v0, const shape2D::Vertex& v1, const shape2D::Vertex& v2) const
+const gfx::Surface& gfx::Surface::DrawTriangleColors(const shape2D::Vertex& v0, const shape2D::Vertex& v1, const shape2D::Vertex& v2) const
 {
     // Get integer 2D position coordinates
     const math::IVec2 iV0(v0.position.x, v0.position.y);
@@ -1057,7 +1104,7 @@ void gfx::Surface::DrawTriangleColors(const shape2D::Vertex& v0, const shape2D::
     const math::IVec2 iV2(v2.position.x, v2.position.y);
 
     // Check if vertices are in clockwise order or degenerate, in which case the triangle cannot be rendered
-    if ((iV1.x - iV0.x) * (iV2.y - iV0.y) - (iV2.x - iV0.x) * (iV1.y - iV0.y) >= 0.0f) return;
+    if ((iV1.x - iV0.x) * (iV2.y - iV0.y) - (iV2.x - iV0.x) * (iV1.y - iV0.y) >= 0.0f) return *this;
 
     // Calculate the 2D bounding box of the triangle clamped to the surface dimensions
     const math::Vector2<Uint16> min = iV0.Min(iV1.Min(iV2)).Clamp(
@@ -1067,7 +1114,7 @@ void gfx::Surface::DrawTriangleColors(const shape2D::Vertex& v0, const shape2D::
         { 0, 0 }, { surface->w - 1, surface->h -1 });
 
     // If triangle is entirely outside the surface we can stop now
-    if (min == max) return;
+    if (min == max) return *this;
 
     // Calculate original edge weights relative to bounds.min
     // Will be used to obtain barycentric coordinates by incrementing then averaging them
@@ -1125,9 +1172,11 @@ void gfx::Surface::DrawTriangleColors(const shape2D::Vertex& v0, const shape2D::
 
         w0Row += sW0.y, w1Row += sW1.y, w2Row += sW2.y;
     }
+
+    return *this;
 }
 
-void gfx::Surface::DrawTriangleImage(const shape2D::Vertex& v0, const shape2D::Vertex& v1, const shape2D::Vertex& v2, const gfx::Surface& image) const
+const gfx::Surface& gfx::Surface::DrawTriangleImage(const shape2D::Vertex& v0, const shape2D::Vertex& v1, const shape2D::Vertex& v2, const gfx::Surface& image) const
 {
     // Get integer 2D position coordinates
     const math::Vector2<int> iV0(v0.position.x, v0.position.y);
@@ -1135,7 +1184,7 @@ void gfx::Surface::DrawTriangleImage(const shape2D::Vertex& v0, const shape2D::V
     const math::Vector2<int> iV2(v2.position.x, v2.position.y);
 
     // Check if vertices are in clockwise order or degenerate, in which case the triangle cannot be rendered
-    if ((iV1.x - iV0.x) * (iV2.y - iV0.y) - (iV2.x - iV0.x) * (iV1.y - iV0.y) >= 0.0f) return;
+    if ((iV1.x - iV0.x) * (iV2.y - iV0.y) - (iV2.x - iV0.x) * (iV1.y - iV0.y) >= 0.0f) return *this;
 
     // Calculate the 2D bounding box of the triangle clamped to the surface dimensions
     const math::Vector2<Uint16> min = iV0.Min(iV1.Min(iV2)).Clamp(
@@ -1201,21 +1250,27 @@ void gfx::Surface::DrawTriangleImage(const shape2D::Vertex& v0, const shape2D::V
 
         w0Row += sW0.y, w1Row += sW1.y, w2Row += sW2.y;
     }
+
+    return *this;
 }
 
-void gfx::Surface::DrawQuadColors(const shape2D::Vertex& v0, const shape2D::Vertex& v1, const shape2D::Vertex& v2, const shape2D::Vertex& v3) const
+const gfx::Surface& gfx::Surface::DrawQuadColors(const shape2D::Vertex& v0, const shape2D::Vertex& v1, const shape2D::Vertex& v2, const shape2D::Vertex& v3) const
 {
     DrawTriangleColors(v0, v1, v2);
     DrawTriangleColors(v2, v3, v0);
+
+    return *this;
 }
 
-void gfx::Surface::DrawQuadImage(const shape2D::Vertex& v0, const shape2D::Vertex& v1, const shape2D::Vertex& v2, const shape2D::Vertex& v3, const gfx::Surface& image) const
+const gfx::Surface& gfx::Surface::DrawQuadImage(const shape2D::Vertex& v0, const shape2D::Vertex& v1, const shape2D::Vertex& v2, const shape2D::Vertex& v3, const gfx::Surface& image) const
 {
     DrawTriangleImage(v0, v1, v2, image);
     DrawTriangleImage(v2, v3, v0, image);
+
+    return *this;
 }
 
-void gfx::Surface::DrawMesh(const shape2D::Mesh& mesh, const gfx::Surface* image) const
+const gfx::Surface& gfx::Surface::DrawMesh(const shape2D::Mesh& mesh, const gfx::Surface* image) const
 {
     if (!image)
     {
@@ -1231,9 +1286,11 @@ void gfx::Surface::DrawMesh(const shape2D::Mesh& mesh, const gfx::Surface* image
             DrawTriangleImage(mesh.vertices[i], mesh.vertices[i + 1], mesh.vertices[i + 2], *image);
         }
     }
+
+    return *this;
 }
 
-void gfx::Surface::DrawImage(const Surface& other, int x, int y, int ox, int oy)
+gfx::Surface& gfx::Surface::DrawImage(const Surface& other, int x, int y, int ox, int oy)
 {
     shape2D::Rectangle rectDst(x - ox, y - oy, other.GetWidth(), other.GetHeight());
 
@@ -1248,14 +1305,16 @@ void gfx::Surface::DrawImage(const Surface& other, int x, int y, int ox, int oy)
     }
 
     if (lockedBefore) Lock();
+
+    return *this;
 }
 
-void gfx::Surface::DrawImage(const Surface& other, const math::IVec2& position, const math::IVec2& origin)
+gfx::Surface& gfx::Surface::DrawImage(const Surface& other, const math::IVec2& position, const math::IVec2& origin)
 {
-    this->DrawImage(other, position.x, position.y, origin.x, origin.y);
+    return this->DrawImage(other, position.x, position.y, origin.x, origin.y);
 }
 
-void gfx::Surface::DrawImageScaled(const Surface& other, float x, float y, float sx, float sy, float ox, float oy)
+gfx::Surface& gfx::Surface::DrawImageScaled(const Surface& other, float x, float y, float sx, float sy, float ox, float oy)
 {
     shape2D::Rectangle rectDst(
         std::round(x - ox * sx), std::round(y - oy * sy),
@@ -1272,14 +1331,16 @@ void gfx::Surface::DrawImageScaled(const Surface& other, float x, float y, float
     }
 
     if (lockedBefore) Lock();
+
+    return *this;
 }
 
-void gfx::Surface::DrawImageScaled(const Surface& other, const math::Vec2& position, const math::Vec2& scale, const math::Vec2& origin)
+gfx::Surface& gfx::Surface::DrawImageScaled(const Surface& other, const math::Vec2& position, const math::Vec2& scale, const math::Vec2& origin)
 {
-    this->DrawImageScaled(other, position.x, position.y, scale.x, scale.y, origin.x, origin.y);
+    return this->DrawImageScaled(other, position.x, position.y, scale.x, scale.y, origin.x, origin.y);
 }
 
-void gfx::Surface::DrawImage(const Surface& other, const shape2D::Rectangle& rectSrc, shape2D::Rectangle rectDst)
+gfx::Surface& gfx::Surface::DrawImage(const Surface& other, const shape2D::Rectangle& rectSrc, shape2D::Rectangle rectDst)
 {
     const bool lockedBefore = IsLocked();
     if (lockedBefore) Unlock();
@@ -1304,4 +1365,6 @@ void gfx::Surface::DrawImage(const Surface& other, const shape2D::Rectangle& rec
     }
 
     if (lockedBefore) Lock();
+
+    return *this;
 }

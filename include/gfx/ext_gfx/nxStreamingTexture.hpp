@@ -33,7 +33,7 @@ namespace _gfx_impl {
     {
       private:
         nexus::shape2D::Rectangle lockedArea; ///< The locked area of the texture.
-        SDL_PixelFormat *format;           ///< The pixel format of the texture.
+        SDL_PixelFormat *format;              ///< The pixel format of the texture.
 
       public:
         /**
@@ -127,18 +127,22 @@ namespace _gfx_impl {
          * @param y The y-coordinate of the top-left corner of the destination rectangle.
          * @param ox The x-coordinate of the origin of the source rectangle.
          * @param oy The y-coordinate of the origin of the source rectangle.
+         * @return A reference to the modified StreamingTexture, allowing method chaining.
+         *
          * @throws core::NexusException if unable to draw the surface onto this StreamingTexture.
          */
-        void DrawImage(const Surface& other, int x, int y, int ox, int oy) override;
+        StreamingTexture& DrawImage(const Surface& other, int x, int y, int ox, int oy) override;
 
         /**
          * @brief Draws the specified Surface onto this StreamingTexture at the specified position.
          * @param other The Surface to draw onto this StreamingTexture.
          * @param position The position of the top-left corner of the destination rectangle.
          * @param origin The origin of the source rectangle.
+         * @return A reference to the modified StreamingTexture, allowing method chaining.
+         *
          * @throws core::NexusException if unable to draw the surface onto this StreamingTexture.
          */
-        void DrawImage(const Surface& other, const nexus::math::IVec2& position, const nexus::math::IVec2& origin) override;
+        StreamingTexture& DrawImage(const Surface& other, const nexus::math::IVec2& position, const nexus::math::IVec2& origin) override;
 
         /**
          * @brief Draws the specified Surface onto this StreamingTexture with scaling and offset.
@@ -149,9 +153,11 @@ namespace _gfx_impl {
          * @param sy The scaling factor along the y-axis.
          * @param ox The x-coordinate of the origin of the source rectangle.
          * @param oy The y-coordinate of the origin of the source rectangle.
+         * @return A reference to the modified StreamingTexture, allowing method chaining.
+         *
          * @throws core::NexusException if unable to draw the surface onto this StreamingTexture.
          */
-        void DrawImageScaled(const Surface& other, float x, float y, float sx, float sy, float ox, float oy) override;
+        StreamingTexture& DrawImageScaled(const Surface& other, float x, float y, float sx, float sy, float ox, float oy) override;
 
         /**
          * @brief Draws the specified Surface onto this StreamingTexture with scaling and offset.
@@ -159,9 +165,11 @@ namespace _gfx_impl {
          * @param position The position of the top-left corner of the destination rectangle.
          * @param scale The scaling factors along the x and y axes.
          * @param origin The origin of the source rectangle.
+         * @return A reference to the modified StreamingTexture, allowing method chaining.
+         *
          * @throws core::NexusException if unable to draw the surface onto this StreamingTexture.
          */
-        void DrawImageScaled(const Surface& other, const nexus::math::Vec2& position, const nexus::math::Vec2& scale, const nexus::math::Vec2& origin) override;
+        StreamingTexture& DrawImageScaled(const Surface& other, const nexus::math::Vec2& position, const nexus::math::Vec2& scale, const nexus::math::Vec2& origin) override;
 
         /**
          * @brief Draws a portion of the specified Surface onto this StreamingTexture
@@ -169,9 +177,11 @@ namespace _gfx_impl {
          * @param other The Surface to draw onto this StreamingTexture.
          * @param rectSrc The source rectangle defining the portion of the other Surface to draw.
          * @param rectDst The destination rectangle defining where to draw on this StreamingTexture.
+         * @return A reference to the modified StreamingTexture, allowing method chaining.
+         *
          * @throws core::NexusException if unable to draw the surface onto this StreamingTexture.
          */
-        void DrawImage(const Surface& other, const nexus::shape2D::Rectangle& rectSrc, nexus::shape2D::Rectangle rectDst) override;
+        StreamingTexture& DrawImage(const Surface& other, const nexus::shape2D::Rectangle& rectSrc, nexus::shape2D::Rectangle rectDst) override;
     };
 
 }

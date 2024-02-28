@@ -45,7 +45,7 @@ void _gfx_impl::StreamingTexture::Unlock()
     this->surface = nullptr;
 }
 
-void _gfx_impl::StreamingTexture::DrawImage(const Surface& other, int x, int y, int ox, int oy)
+_gfx_impl::StreamingTexture& _gfx_impl::StreamingTexture::DrawImage(const Surface& other, int x, int y, int ox, int oy)
 {
     shape2D::Rectangle rectDst(x - ox, y - oy, other.GetWidth(), other.GetHeight());
 
@@ -55,14 +55,16 @@ void _gfx_impl::StreamingTexture::DrawImage(const Surface& other, int x, int y, 
             "StreamingTexture", "Unable to draw surface onto StreamingTexture.",
             "SDL", SDL_GetError());
     }
+
+    return *this;
 }
 
-void _gfx_impl::StreamingTexture::DrawImage(const Surface& other, const math::IVec2& position, const math::IVec2& origin)
+_gfx_impl::StreamingTexture& _gfx_impl::StreamingTexture::DrawImage(const Surface& other, const math::IVec2& position, const math::IVec2& origin)
 {
-    this->DrawImage(other, position.x, position.y, origin.x, origin.y);
+    return this->DrawImage(other, position.x, position.y, origin.x, origin.y);
 }
 
-void _gfx_impl::StreamingTexture::DrawImageScaled(const Surface& other, float x, float y, float sx, float sy, float ox, float oy)
+_gfx_impl::StreamingTexture& _gfx_impl::StreamingTexture::DrawImageScaled(const Surface& other, float x, float y, float sx, float sy, float ox, float oy)
 {
     shape2D::Rectangle rectDst(
         std::round(x - ox * sx), std::round(y - oy * sy),
@@ -74,14 +76,16 @@ void _gfx_impl::StreamingTexture::DrawImageScaled(const Surface& other, float x,
             "StreamingTexture", "Unable to draw surface onto StreamingTexture with scaling.",
             "SDL", SDL_GetError());
     }
+
+    return *this;
 }
 
-void _gfx_impl::StreamingTexture::DrawImageScaled(const Surface& other, const math::Vec2& position, const math::Vec2& scale, const math::Vec2& origin)
+_gfx_impl::StreamingTexture& _gfx_impl::StreamingTexture::DrawImageScaled(const Surface& other, const math::Vec2& position, const math::Vec2& scale, const math::Vec2& origin)
 {
-    this->DrawImageScaled(other, position.x, position.y, scale.x, scale.y, origin.x, origin.y);
+    return this->DrawImageScaled(other, position.x, position.y, scale.x, scale.y, origin.x, origin.y);
 }
 
-void _gfx_impl::StreamingTexture::DrawImage(const Surface& other, const shape2D::Rectangle& rectSrc, shape2D::Rectangle rectDst)
+_gfx_impl::StreamingTexture& _gfx_impl::StreamingTexture::DrawImage(const Surface& other, const shape2D::Rectangle& rectSrc, shape2D::Rectangle rectDst)
 {
     if (rectSrc.GetSize() != rectDst.GetSize())
     {
@@ -101,4 +105,6 @@ void _gfx_impl::StreamingTexture::DrawImage(const Surface& other, const shape2D:
                 "SDL", SDL_GetError());
         } 
     }
+
+    return *this;
 }
