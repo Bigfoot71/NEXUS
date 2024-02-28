@@ -697,6 +697,78 @@ namespace nexus { namespace input {
     };
 
     /**
+     * @brief A wrapper class for the array returned by SDL_GetKeyboardState.
+     *        This class will be used as the return type for the input::GetKeyboardState function,
+     *        allowing the use of the input::Scancode enum class as an index for subscription.
+     */
+    class Keystates
+    {
+      private:
+        const Uint8 *keystates; ///< Pointer to the array of keyboard states.
+        ::size_t numKeys;       ///< Number of elements in the keystates array.
+
+      public:
+        /**
+         * @brief Constructor for the Keystates class.
+         * @param keystates Pointer to the array of keyboard states to wrap.
+         * @param numKeys Number of elements in the keystates array.
+         */
+        Keystates(const Uint8* keystates, ::size_t numKeys)
+        : keystates(keystates)
+        , numKeys(numKeys)
+        { }
+
+        /**
+         * @brief Overloaded subscript operator to access the keyboard state by index.
+         * @param key The index of the key.
+         * @return The state of the key at the specified index.
+         */
+        Uint8 operator[](::size_t key) const
+        {
+            return keystates[key];
+        }
+
+        /**
+         * @brief Overloaded subscript operator to access the keyboard state by Scancode.
+         * @param key The Scancode of the key.
+         * @return The state of the key corresponding to the specified Scancode.
+         */
+        Uint8 operator[](Scancode key) const
+        {
+            return keystates[static_cast<Uint16>(key)];
+        }
+
+        /**
+         * @brief Checks if a key specified by Scancode is currently pressed.
+         * @param key The Scancode of the key to check.
+         * @return True if the key is currently pressed, false otherwise.
+         */
+        bool IsPressed(Scancode key) const
+        {
+            return keystates[static_cast<Uint16>(key)] != 0;
+        }
+
+        /**
+         * @brief Checks if a key specified by Scancode is currently released.
+         * @param key The Scancode of the key to check.
+         * @return True if the key is currently released, false otherwise.
+         */
+        bool IsReleased(Scancode key) const
+        {
+            return keystates[static_cast<Uint16>(key)] == 0;
+        }
+
+        /**
+         * @brief Returns the number of elements in the keystates array.
+         * @return The number of elements in the keystates array.
+         */
+        ::size_t GetNumKeys() const
+        {
+            return numKeys;
+        }
+    };
+
+    /**
      * @brief Equality comparison between a KeyModifier and an SDL_Keymod.
      *
      * @param a The KeyModifier to compare.
@@ -752,12 +824,13 @@ namespace nexus { namespace input {
      * The pointer returned is a pointer to an internal SDL array, and it remains valid for the entire lifetime of the application.
      * The caller should not free the memory associated with this pointer.
      *
-     * @param lenArray An optional pointer to store the length of the state array. If provided, the length will be written to this pointer.
-     * @return A pointer to the keyboard state array.
+     * @return A wrapper object (Keystates) for the keyboard state array.
      */
-    inline const Uint8* GetKeyboardState(int* lenArray = nullptr)
+    inline Keystates GetKeyboardState()
     {
-        return SDL_GetKeyboardState(lenArray);
+        int numKeys = 0;
+        const Uint8* keystates = SDL_GetKeyboardState(&numKeys);
+        return Keystates(keystates, numKeys);
     }
 
     /**
