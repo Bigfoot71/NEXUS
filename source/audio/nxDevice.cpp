@@ -43,7 +43,11 @@ Device::Device(const char* deviceName)
 
 Device::~Device()
 {
-    alcMakeContextCurrent(nullptr);                 ///< Release the current audio context.
+    if (this->IsCurrent())
+    {
+        alcMakeContextCurrent(nullptr);             ///< Release the current audio context.
+    }
+
     alcDestroyContext(context);                     ///< Destroy the audio context.
     alcCloseDevice(device);                         ///< Close the audio device.
 }
