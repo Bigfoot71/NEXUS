@@ -20,9 +20,9 @@
 #ifndef NEXUS_AUDIO_SOUND_HPP
 #define NEXUS_AUDIO_SOUND_HPP
 
-#include "./nxSource.hpp"
+#include "./impl/nxSource.hpp"
 
-namespace nexus { namespace audio {
+namespace _audio_impl {
 
     /**
      * @brief Class representing a sound source in audio processing.
@@ -31,7 +31,7 @@ namespace nexus { namespace audio {
      * audio files using OpenAL. It reads audio data from a specified file and
      * associates it with an OpenAL buffer, making it ready for playback.
      */
-    class NEXUS_API Sound : public Source
+    class Sound : public Source
     {
       private:
         ALuint buffer;      ///< OpenAL buffer (id)
@@ -42,9 +42,10 @@ namespace nexus { namespace audio {
          *
          * Loads audio data from the specified file and associates it with an OpenAL buffer.
          *
+         * @param ctx The audio device context.
          * @param filePath The path to the audio file.
          */
-        Sound(const std::string& filePath);
+        Sound(nexus::audio::Device& ctx, const std::string& filePath);
 
         /**
          * @brief Destructor for the Sound class.
@@ -52,6 +53,32 @@ namespace nexus { namespace audio {
          * Stops the source and frees the associated OpenAL buffer.
          */
         ~Sound();
+    };
+
+}
+
+namespace nexus { namespace audio {
+
+    /**
+     * @brief Class representing a collection of audio sounds.
+     *
+     * The Sound class serves as a container for managing audio sound objects. It
+     * provides functionality to load and play audio files using OpenAL, encapsulating
+     * the behavior of individual sound sources.
+     */
+    struct NEXUS_API Sound : public utils::Container<_audio_impl::Sound>
+    {
+        /**
+         * @brief Constructor for the Sound class.
+         *
+         * Loads audio data from the specified file and associates it with an OpenAL buffer.
+         *
+         * @param ctx The audio device context.
+         * @param filePath The path to the audio file.
+         */
+        Sound(nexus::audio::Device& ctx, const std::string& filePath)
+        : utils::Container<_audio_impl::Sound>(ctx, filePath)
+        { }
     };
 
 }}

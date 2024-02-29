@@ -15,7 +15,7 @@ int main(int argv, char** args)
     gfx::Surface stop = font.RenderTextBlended("NOT PLAYING", gfx::White);
 
     audio::Device audioDevice;
-    audio::Music music(RESOURCES_PATH "audio/music.wav");
+    audio::Music music(audioDevice, RESOURCES_PATH "audio/music.wav");
 
     bool isRunning = true;
     bool keyPressed = false;
@@ -37,8 +37,8 @@ int main(int argv, char** args)
                 case core::Event::Type::KeyDown:
                     if (keyPressed == false)
                     {
-                        if (music.IsPlaying()) music.Stop();
-                        else music.Play();
+                        if (music->IsPlaying()) music->Stop();
+                        else music->Play();
                         keyPressed = true;
                     }
                     break;
@@ -56,7 +56,7 @@ int main(int argv, char** args)
 
         winCanvas.Lock();
             winCanvas.Fill(gfx::Black);
-            if (music.IsPlaying()) winCanvas.DrawImage(play, (window.GetSize() - play.GetSize()) / 2);
+            if (music->IsPlaying()) winCanvas.DrawImage(play, (window.GetSize() - play.GetSize()) / 2);
             else winCanvas.DrawImage(stop, (window.GetSize() - stop.GetSize()) / 2);
         winCanvas.Unlock();
 

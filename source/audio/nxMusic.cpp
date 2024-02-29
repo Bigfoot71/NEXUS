@@ -19,9 +19,9 @@
 
 #include "audio/nxMusic.hpp"
 
-using namespace nexus::audio;
+using namespace nexus;
 
-void Music::FillBuffer(ALuint bufferID)
+void _audio_impl::Music::FillBuffer(ALuint bufferID)
 {
     // Read a chunk of audio data from the sound file into the memory buffer
     sf_count_t len = fileHandle.readf(membuf, BUFFER_SAMPLES);
@@ -47,7 +47,7 @@ void Music::FillBuffer(ALuint bufferID)
     }
 }
 
-void Music::DecodingThreadFunc()
+void _audio_impl::Music::DecodingThreadFunc()
 {
     while (decodingThreadRunning)
     {
@@ -86,7 +86,8 @@ void Music::DecodingThreadFunc()
     }
 }
 
-Music::Music(const std::string& filePath) : decodingThreadRunning(false)
+_audio_impl::Music::Music(audio::Device& ctx, const std::string& filePath)
+: Source(ctx), decodingThreadRunning(false)
 {
     // Generate OpenAL buffers
     alGenBuffers(NUM_BUFFERS, buffers);
@@ -109,7 +110,7 @@ Music::Music(const std::string& filePath) : decodingThreadRunning(false)
     membuf = static_cast<short*>(malloc(frame_size));
 }
 
-Music::~Music()
+_audio_impl::Music::~Music()
 {
     // Stop the source before cleaning up
     alSourceStop(source);
@@ -127,7 +128,7 @@ Music::~Music()
     alDeleteBuffers(NUM_BUFFERS, buffers);
 }
 
-void Music::Play()
+void _audio_impl::Music::Play()
 {
     // Clear any previous OpenAL errors
     alGetError();
@@ -161,7 +162,7 @@ void Music::Play()
     decodingThreadRunning = true;
 }
 
-void Music::Pause()
+void _audio_impl::Music::Pause()
 {
     // Pause the OpenAL source
     alSourcePause(source);
@@ -174,7 +175,7 @@ void Music::Pause()
     }
 }
 
-void Music::Rewind()
+void _audio_impl::Music::Rewind()
 {
     // Stop the decoding thread and wait for it to finish
     decodingThreadRunning = false;
@@ -191,7 +192,7 @@ void Music::Rewind()
     Play();
 }
 
-void Music::Stop()
+void _audio_impl::Music::Stop()
 {
     // Stop the decoding thread and wait for it to finish
     decodingThreadRunning = false;

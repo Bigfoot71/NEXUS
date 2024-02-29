@@ -119,7 +119,6 @@
 #if SUPPORT_AUDIO
 #   include "audio/nxDevice.hpp"
 #   include "audio/nxEffect.hpp"
-#   include "audio/nxSource.hpp"
 #   include "audio/nxMusic.hpp"
 #   include "audio/nxSound.hpp"
 #endif

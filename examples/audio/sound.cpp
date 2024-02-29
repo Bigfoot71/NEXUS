@@ -15,8 +15,13 @@ int main(int argv, char** args)
     gfx::Surface stop = font.RenderTextBlended("NOT PLAYING", gfx::White);
 
     audio::Device audioDevice;
-    audio::Sound sound(RESOURCES_PATH "audio/beep.wav");
-    sound.AttachEffect(audioDevice.NewEffect("echo", audio::Echo()));
+    audio::Sound sound(audioDevice, RESOURCES_PATH "audio/beep.wav");
+
+    audio::Effect echo(audioDevice, audio::Effect::Type::Echo);
+    echo->SetParameter(audio::Echo::Feedback, 0.5f);
+    echo->SetParameter(audio::Echo::Damping, 0.5f);
+    echo->SetParameter(audio::Echo::LRDelay, 0.1f);
+    sound->AttachEffect(echo);
 
     bool isRunning = true;
     bool keyPressed = false;
@@ -39,7 +44,7 @@ int main(int argv, char** args)
                     if (keyPressed == false)
                     {
                         keyPressed = true;
-                        sound.Play();
+                        sound->Play();
                     }
                     break;
 
@@ -56,7 +61,7 @@ int main(int argv, char** args)
 
         winCanvas.Lock();
             winCanvas.Fill(gfx::Black);
-            if (sound.IsPlaying()) winCanvas.DrawImage(play, (window.GetSize() - play.GetSize()) / 2);
+            if (sound->IsPlaying()) winCanvas.DrawImage(play, (window.GetSize() - play.GetSize()) / 2);
             else winCanvas.DrawImage(stop, (window.GetSize() - stop.GetSize()) / 2);
         winCanvas.Unlock();
 

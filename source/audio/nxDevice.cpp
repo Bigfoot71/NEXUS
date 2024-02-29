@@ -27,7 +27,7 @@ Device::Device(const char* deviceName)
     if (!device) throw core::NexusException("AudioDevice", "Unable to open OpenAL audio device");
 
 #   ifdef ALC_EXT_EFX
-        ALint attribs[4] = { ALC_MAX_AUXILIARY_SENDS, MAX_SOURCE_EFFECTS, 0, 0 };
+        ALint attribs[4] = { ALC_MAX_AUXILIARY_SENDS, MaxSourceEffects, 0, 0 };
 #   else
         ALint *attribs = nullptr;
 #   endif
@@ -43,10 +43,6 @@ Device::Device(const char* deviceName)
 
 Device::~Device()
 {
-#   ifdef ALC_EXT_EFX
-        effects.clear();                            ///< Clear the map of audio effects.
-#   endif
-
     alcMakeContextCurrent(nullptr);                 ///< Release the current audio context.
     alcDestroyContext(context);                     ///< Destroy the audio context.
     alcCloseDevice(device);                         ///< Close the audio device.

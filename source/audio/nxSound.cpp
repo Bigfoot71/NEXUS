@@ -19,9 +19,9 @@
 
 #include "audio/nxSound.hpp"
 
-using namespace nexus::audio;
+using namespace nexus;
 
-Sound::Sound(const std::string& filePath) : Source()
+_audio_impl::Sound::Sound(audio::Device& ctx, const std::string& filePath) : _audio_impl::Source(ctx)
 {
     SndfileHandle fileHandle(filePath);
 
@@ -50,11 +50,12 @@ Sound::Sound(const std::string& filePath) : Source()
     }
     else
     {
-        throw core::NexusException("Sound:", "Failed to read audio data from file " + filePath);
+        throw core::NexusException("audio::Sound",
+            "Failed to read audio data from file " + filePath);
     }
 }
 
-Sound::~Sound()
+_audio_impl::Sound::~Sound()
 {
     // Stop source before if needed
     alSourceStop(source);

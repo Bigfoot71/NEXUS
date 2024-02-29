@@ -17,15 +17,18 @@
  *   3. This notice may not be removed or altered from any source distribution.
  */
 
-#ifndef NEXUS_AUDIO_SOURCE_HPP
-#define NEXUS_AUDIO_SOURCE_HPP
+#ifndef NEXUS_AUDIO_IMPL_SOURCE_HPP
+#define NEXUS_AUDIO_IMPL_SOURCE_HPP
 
-#include "./nxDevice.hpp"
-#include "./nxEffect.hpp"
-#include "../math/nxMath.hpp"
-#include "../math/nxVec3.hpp"
-#include "../math/nxVec4.hpp"
-#include "../core/nxException.hpp"
+#include "../nxDevice.hpp"
+#include "../nxEffect.hpp"
+#include "../../math/nxMath.hpp"
+#include "../../math/nxVec3.hpp"
+#include "../../math/nxVec4.hpp"
+#include "../../core/nxException.hpp"
+#include "../../utils/nxContextual.hpp"
+
+#include <optional>
 
 #include <AL/al.h>
 #include <AL/alc.h>
@@ -33,28 +36,26 @@
 #include <AL/alext.h>
 #include <sndfile.hh>
 
-namespace nexus { namespace audio {
+namespace _audio_impl {
 
     /**
      * @brief The base class for sound and music sources in the audio system.
      */
-    class NEXUS_API Source
+    class Source : public nexus::utils::Contextual<nexus::audio::Device>
     {
       protected:
-        Uint32 frameCount;                    ///< Total number of frames (considering channels)
-        Uint32 sampleRate;                    ///< Frequency (samples per second)
-        Uint32 channels;                      ///< Number of channels (1-mono, 2-stereo, ...)
-        ALenum format;                          ///< Bit depth and channels count (OpenAL format)
+        Uint32 frameCount;                          ///< Total number of frames (considering channels)
+        Uint32 sampleRate;                          ///< Frequency (samples per second)
+        Uint32 channels;                            ///< Number of channels (1-mono, 2-stereo, ...)
+        ALenum format;                              ///< Bit depth and channels count (OpenAL format)
 
       protected:
-        ALuint source;                          ///< OpenAL source (id)
+        ALuint source;                              ///< OpenAL source (id)
 
 #   ifdef ALC_EXT_EFX
-
       protected:
-        ALuint filter;                          ///< OpenAL filter (id)
-        const Effect *effect = nullptr;         ///< Pointer to linked effect
-
+        ALuint filter;                              ///< OpenAL filter (id)
+        std::optional<nexus::audio::Effect> effect; ///< Pointer to linked effect
 #   endif
 
       protected:
@@ -62,9 +63,10 @@ namespace nexus { namespace audio {
          * @brief Exception for spatial audio support.
          * Spatial audio features are only available for mono sources.
          */
-        static core::NexusException SpatialSupportException()
+        static nexus::core::NexusException SpatialSupportException()
         {
-            return core::NexusException("Sound", "Spatial audio features are only available for mono sources.");
+            return nexus::core::NexusException("Sound",
+                "Spatial audio features are only available for mono sources.");
         }
 
         /**
@@ -84,7 +86,8 @@ namespace nexus { namespace audio {
             if (channels == 3 && ambisonicType == SF_AMBISONIC_B_FORMAT) return AL_FORMAT_BFORMAT2D_16;
             if (channels == 4 && ambisonicType == SF_AMBISONIC_B_FORMAT) return AL_FORMAT_BFORMAT3D_16;
 
-            throw core::NexusException("AudioDevice", "Unsupported channel count or ambisonic type from file");
+            throw nexus::core::NexusException("AudioDevice",
+                "Unsupported channel count or ambisonic type from file");
         }
 
       protected:
@@ -104,9 +107,13 @@ namespace nexus { namespace audio {
       protected:
         /**
          * @brief Constructor for the Source class.
+         *
          * It generates an OpenAL source and, if EFX is supported, a filter.
+         *
+         * @param ctx The audio device context.
          */
-        Source()
+        Source(nexus::audio::Device& ctx)
+        : nexus::utils::Contextual<nexus::audio::Device>(ctx)
         {
             alGenSources(1, &source);
 
@@ -279,7 +286,7 @@ namespace nexus { namespace audio {
          * @param position The position vector in 3D space.
          * @throws core::NexusException if spatial audio features are not supported for the source.
          */
-        virtual void SetPosition(const math::Vec3& position)
+        virtual void SetPosition(const nexus::math::Vec3& position)
         {
             if (channels != 1) throw SpatialSupportException();
             alSource3f(source, AL_POSITION, position.x, position.y, position.z);
@@ -291,11 +298,11 @@ namespace nexus { namespace audio {
          * @return The position vector in 3D space.
          * @throws core::NexusException if spatial audio features are not supported for the source.
          */
-        virtual math::Vec3 GetPosition() const
+        virtual nexus::math::Vec3 GetPosition() const
         {
             if (channels != 1) throw SpatialSupportException();
 
-            math::Vec3 position;
+            nexus::math::Vec3 position;
             alGetSource3f(source, AL_POSITION, &position.x, &position.y, &position.z);
             return position;
         }
@@ -321,7 +328,7 @@ namespace nexus { namespace audio {
          * @param up The up direction vector (default is {0, 1, 0}).
          * @throws core::NexusException if spatial audio features are not supported for the source.
          */
-        virtual void SetOrientation(const math::Vec3& at, const math::Vec3& up = { 0, 1, 0 })
+        virtual void SetOrientation(const nexus::math::Vec3& at, const nexus::math::Vec3& up = { 0, 1, 0 })
         {
             if (channels != 1) throw SpatialSupportException();
             const ALfloat orientation[6] = { at.x, at.y, at.z, up.x, up.y, up.z };
@@ -335,7 +342,7 @@ namespace nexus { namespace audio {
          * @return The forward direction vector.
          * @throws core::NexusException if spatial audio features are not supported for the source.
          */
-        virtual math::Vec3 GetOrientation(math::Vec3* up = nullptr) const
+        virtual nexus::math::Vec3 GetOrientation(nexus::math::Vec3* up = nullptr) const
         {
             if (channels != 1) throw SpatialSupportException();
 
@@ -374,7 +381,7 @@ namespace nexus { namespace audio {
          * @param velocity The velocity vector.
          * @throws core::NexusException if spatial audio features are not supported for the source.
          */
-        virtual void SetVelocity(const math::Vec3& velocity)
+        virtual void SetVelocity(const nexus::math::Vec3& velocity)
         {
             if (channels != 1) throw SpatialSupportException();
             alSource3f(source, AL_VELOCITY, velocity.x, velocity.y, velocity.z);
@@ -386,11 +393,11 @@ namespace nexus { namespace audio {
          * @return The velocity vector.
          * @throws core::NexusException if spatial audio features are not supported for the source.
          */
-        virtual math::Vec3 GetVelocity() const
+        virtual nexus::math::Vec3 GetVelocity() const
         {
             if (channels != 1) throw SpatialSupportException();
 
-            math::Vec3 velocity;
+            nexus::math::Vec3 velocity;
             alGetSource3f(source, AL_POSITION, &velocity.x, &velocity.y, &velocity.z);
             return velocity;
         }
@@ -499,11 +506,11 @@ namespace nexus { namespace audio {
          * @return A Vec4 containing inner angle, outer angle, outer volume, and outer high-frequency gain.
          * @throws core::NexusException if spatial audio features are not supported for the source.
          */
-        virtual math::Vec4 GetCone() const
+        virtual nexus::math::Vec4 GetCone() const
         {
             if (channels != 1) throw SpatialSupportException();
 
-            math::Vec4 result;
+            nexus::math::Vec4 result;
 
             int innerAngle, outerAngle;
             float outerVolume, outerHighGain;
@@ -517,8 +524,8 @@ namespace nexus { namespace audio {
 #           endif
 
             return {
-                static_cast<float>(innerAngle * math::Deg2Rad),
-                static_cast<float>(outerAngle * math::Deg2Rad),
+                static_cast<float>(innerAngle * nexus::math::Deg2Rad),
+                static_cast<float>(outerAngle * nexus::math::Deg2Rad),
                 outerVolume, outerHighGain
             };
         }
@@ -557,7 +564,7 @@ namespace nexus { namespace audio {
          * 
          * @param type The filter type to set.
          */
-        virtual void SetFilter(Device::Filter type)
+        virtual void SetFilter(nexus::audio::Device::Filter type)
         {
             alFilteri(filter, AL_FILTER_TYPE, static_cast<ALint>(type));
         }
@@ -567,11 +574,11 @@ namespace nexus { namespace audio {
          * 
          * @return The filter type.
          */
-        virtual Device::Filter GetFilter() const
+        virtual nexus::audio::Device::Filter GetFilter() const
         {
             ALint type;
             alGetFilteri(filter, AL_FILTER_TYPE, &type);
-            return static_cast<Device::Filter>(type);
+            return static_cast<nexus::audio::Device::Filter>(type);
         }
 
         /**
@@ -579,10 +586,14 @@ namespace nexus { namespace audio {
          * 
          * @param effect The effect to attach.
          */
-        virtual void AttachEffect(const Effect* effect)
+        virtual void AttachEffect(const nexus::audio::Effect& effect)
         {
-            alSource3i(source, AL_AUXILIARY_SEND_FILTER, effect->GetSlot(), effect->GetID(), 0);
-            this->effect = effect;
+            if (!this->effect.has_value() || &(this->effect.value()) != &effect)
+            {
+                // TODO: Add context check
+                alSource3i(source, AL_AUXILIARY_SEND_FILTER, effect->GetSlot(), effect->GetID(), 0);
+                this->effect = effect;
+            }
         }
 
         /**
@@ -590,10 +601,10 @@ namespace nexus { namespace audio {
          */
         virtual void DetachEffect()
         {
-            if (effect != nullptr)
+            if (effect != std::nullopt)
             {
                 alSource3i(source, AL_AUXILIARY_SEND_FILTER, AL_EFFECTSLOT_NULL, AL_EFFECT_NULL, 0);
-                effect = nullptr;
+                effect = std::nullopt;
             }
         }
 
@@ -604,7 +615,7 @@ namespace nexus { namespace audio {
          */
         virtual bool HasEffect() const
         {
-            return effect != nullptr;
+            return effect.has_value();
         }
 
         /**
@@ -612,15 +623,15 @@ namespace nexus { namespace audio {
          * 
          * @return A pointer to the attached effect, or nullptr if no effect is attached.
          */
-        virtual const Effect* GetEffect() const
+        virtual const nexus::audio::Effect& GetEffect() const
         {
-            return effect;
+            return effect.value();
         }
 
 #   endif
 
     };
 
-}}
+}
 
-#endif
+#endif //NEXUS_AUDIO_IMPL_SOURCE_HPP

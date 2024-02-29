@@ -22,12 +22,13 @@
 
 #include "../platform/nxPlatform.hpp"
 
+#include "../core/nxLog.hpp"
 #include "../math/nxVec3.hpp"
-#include "../audio/nxEffect.hpp"
 #include "../core/nxException.hpp"
 
-#include <iostream>
+#include "./nxEffect.hpp"
 #include <algorithm>
+#include <iostream>
 
 #include <AL/al.h>
 #include <AL/alc.h>
@@ -48,26 +49,19 @@ namespace nexus { namespace audio {
     class NEXUS_API Device
     {
       private:
-        ALCdevice* device;   ///< OpenAL audio device.
-        ALCcontext* context; ///< OpenAL audio context.
+        ALCdevice *device;      ///< OpenAL audio device.
+        ALCcontext *context;    ///< OpenAL audio context.
 
 #ifdef ALC_EXT_EFX
 
       public:
-        static constexpr int MAX_SOURCE_EFFECTS = 64; ///< Maximum number of effects that can be applied to a source.
-
-        /**
-         * @brief Map of effect names to Effect instances.
-         *
-         * This map stores the available audio effects associated with their names.
-         */
-        std::unordered_map<std::string, audio::Effect> effects;
+        static constexpr int MaxSourceEffects = 64;     ///< Maximum number of effects that can be applied to a source.
 
       public:
         /**
          * @brief Enumeration representing filter types for audio effects.
          */
-        enum class Filter : ALint
+        enum class Filter : ALenum
         {
             None            = AL_FILTER_NULL,           ///< No filter.
             LowPass         = AL_FILTER_LOWPASS,        ///< Low-pass filter.
@@ -97,11 +91,37 @@ namespace nexus { namespace audio {
         ~Device();
 
         /**
+         * @brief Checks if the audio device's context is current.
+         *
+         * This function checks whether the current OpenAL context matches the context
+         * associated with the audio device, indicating whether the audio device's context
+         * is currently active.
+         *
+         * @return True if the audio device's context is current, false otherwise.
+         */
+        bool IsCurrent() const
+        {
+            return context == alcGetCurrentContext();
+        }
+
+        /**
+         * @brief Makes the audio device's context current.
+         *
+         * This function sets the current OpenAL context to the context associated with
+         * the audio device. This is necessary for making OpenAL API calls that affect
+         * the current context.
+         */
+        void MakeCurrent() const
+        {
+            alcMakeContextCurrent(context);
+        }
+
+        /**
          * @brief Set the listener's volume.
          *
          * @param gain The gain (volume) to set for the listener. Should be a value between 0.0 (silent) and 1.0 (full volume).
          */
-        void SetListenerVolume(float gain)
+        void SetListenerVolume(float gain) const
         {
             alListenerf(AL_GAIN, gain);
         }
@@ -125,7 +145,7 @@ namespace nexus { namespace audio {
          * @param y The Y-coordinate of the listener's position.
          * @param z The Z-coordinate of the listener's position.
          */
-        void SetListenerPosition(float x, float y, float z)
+        void SetListenerPosition(float x, float y, float z) const
         {
             alListener3f(AL_POSITION, x, y, z);
         }
@@ -135,7 +155,7 @@ namespace nexus { namespace audio {
          *
          * @param position The position of the listener in 3D space.
          */
-        void SetListenerPosition(const math::Vec3& position)
+        void SetListenerPosition(const math::Vec3& position) const
         {
             alListener3f(AL_POSITION, position.x, position.y, position.z);
         }
@@ -162,7 +182,7 @@ namespace nexus { namespace audio {
          * @param upY The Y-coordinate of the listener's "up" direction.
          * @param upZ The Z-coordinate of the listener's "up" direction.
          */
-        void SetListenerOrientation(float atX, float atY, float atZ, float upX = 0, float upY = 1, float upZ = 0)
+        void SetListenerOrientation(float atX, float atY, float atZ, float upX = 0, float upY = 1, float upZ = 0) const
         {
             const ALfloat orientation[6] = { atX, atY, atZ, upX, upY, upZ };
             alListenerfv(AL_ORIENTATION, orientation);
@@ -174,7 +194,7 @@ namespace nexus { namespace audio {
          * @param at The "at" direction of the listener.
          * @param up The "up" direction of the listener.
          */
-        void SetListenerOrientation(const math::Vec3& at, const math::Vec3& up = { 0, 1, 0 })
+        void SetListenerOrientation(const math::Vec3& at, const math::Vec3& up = { 0, 1, 0 }) const
         {
             const ALfloat orientation[6] = { at.x, at.y, at.z, up.x, up.y, up.z };
             alListenerfv(AL_ORIENTATION, orientation);
@@ -212,7 +232,7 @@ namespace nexus { namespace audio {
          * @param y The Y-coordinate of the listener's velocity.
          * @param z The Z-coordinate of the listener's velocity.
          */
-        void SetListenerVelocity(float x, float y, float z)
+        void SetListenerVelocity(float x, float y, float z) const
         {
             alListener3f(AL_VELOCITY, x, y, z);
         }
@@ -222,7 +242,7 @@ namespace nexus { namespace audio {
          *
          * @param velocity The velocity of the listener.
          */
-        void SetListenerVelocity(const math::Vec3& velocity)
+        void SetListenerVelocity(const math::Vec3& velocity) const
         {
             alListener3f(AL_VELOCITY, velocity.x, velocity.y, velocity.z);
         }
@@ -238,38 +258,6 @@ namespace nexus { namespace audio {
             alGetListener3f(AL_POSITION, &velocity.x, &velocity.y, &velocity.z);
             return velocity;
         }
-
-#   ifdef ALC_EXT_EFX
-
-        /**
-         * @brief Create a new audio effect and associate it with a name.
-         *
-         * This function allows you to create and add a new audio effect to the device's effect list.
-         * The effect is moved into the map and a pointer to the effect is returned for further
-         * manipulation. If an effect with the same name already exists, it will be replaced.
-         *
-         * @param name The name to associate with the effect.
-         * @param effect The audio effect to add.
-         * @return A pointer to the added effect.
-         */
-        audio::Effect* NewEffect(const std::string& name, audio::Effect&& effect)
-        {
-            return &(effects.insert_or_assign(name, std::move(effect)).first->second);
-        }
-
-        /**
-         * @brief Get a pointer to an audio effect by name.
-         *
-         * @param name The name of the effect.
-         * @return A pointer to the effect if found, otherwise nullptr.
-         */
-        audio::Effect* GetEffect(const std::string& name)
-        {
-            auto it = effects.find(name);
-            return it != effects.end() ? &(it->second) : nullptr;
-        }
-
-#   endif
     };
 
 }}

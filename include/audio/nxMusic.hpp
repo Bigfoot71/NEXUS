@@ -22,13 +22,13 @@
 
 #include "../platform/nxPlatform.hpp"
 
-#include "core/nxException.hpp"
+#include "../core/nxException.hpp"
+#include "./impl/nxSource.hpp"
 #include "./nxDevice.hpp"
-#include "./nxSource.hpp"
 #include <sndfile.hh>
 #include <thread>
 
-namespace nexus { namespace audio {
+namespace _audio_impl {
 
     /**
      * @brief Music class for handling audio music playback.
@@ -36,7 +36,7 @@ namespace nexus { namespace audio {
      * The `Music` class is derived from the `Source` class and adds functionality
      * specific to handling music playback, such as streaming from file.
      */
-    class NEXUS_API Music : public Source
+    class Music : public Source
     {
       private:
         static constexpr int BUFFER_SAMPLES = 8192;
@@ -103,9 +103,10 @@ namespace nexus { namespace audio {
          * opening the specified audio file, setting audio information,
          * and preparing a memory buffer for audio decoding.
          * 
+         * @param ctx The audio device context.
          * @param filePath The path to the audio file to be loaded.
          */
-        Music(const std::string& filePath);
+        Music(nexus::audio::Device& ctx, const std::string& filePath);
 
         /**
          * @brief Destructor for the Music class.
@@ -160,6 +161,32 @@ namespace nexus { namespace audio {
          * Overrides the base class method.
          */
         void Stop() override;
+    };
+
+}
+
+namespace nexus { namespace audio {
+
+    /**
+     * @brief Class representing a collection of music tracks.
+     *
+     * The Music class serves as a container for managing music track objects. It
+     * provides functionality to load and play music files using OpenAL, encapsulating
+     * the behavior of individual music sources.
+     */
+    struct NEXUS_API Music : public utils::Container<_audio_impl::Music>
+    {
+        /**
+         * @brief Constructor for the Music class.
+         *
+         * Loads music data from the specified file and associates it with an OpenAL buffer.
+         *
+         * @param ctx The audio device context.
+         * @param filePath The path to the music file.
+         */
+        Music(nexus::audio::Device& ctx, const std::string& filePath)
+        : utils::Container<_audio_impl::Music>(ctx, filePath)
+        { }
     };
 
 }}

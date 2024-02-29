@@ -115,6 +115,14 @@ namespace _core_impl {
          */
         virtual ~App() = default;
 
+    #if SUPPORT_AUDIO
+        // Allows given an instance of App
+        // directly to instantiate audio objects,
+        // as for graphic objects (Texture, Shader, etc.)
+        operator nexus::audio::Device&() { return audio; }
+        operator const nexus::audio::Device&() const { return audio; }
+    #endif
+
     #if EXTENSION_CORE
 
         /**
