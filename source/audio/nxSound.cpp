@@ -28,7 +28,7 @@ _audio_impl::Sound::Sound(audio::Device& ctx, const std::string& filePath) : _au
     if (fileHandle.error())
     {
         throw core::NexusException(
-            "Sound", "Failed to load audio file [" + filePath + "].",
+            "audio::Sound", "Failed to load audio file [" + filePath + "]",
             "SNDFILE", fileHandle.strError());
     }
 
@@ -51,7 +51,7 @@ _audio_impl::Sound::Sound(audio::Device& ctx, const std::string& filePath) : _au
     else
     {
         throw core::NexusException("audio::Sound",
-            "Failed to read audio data from file " + filePath);
+            "Failed to read audio data from file [" + filePath + "]");
     }
 }
 
