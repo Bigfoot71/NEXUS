@@ -39,8 +39,8 @@ namespace _ext_gfx_gapi_impl {
             ThreePatchHorizontal            ///< 3x1 tiles layout
         };
 
-        nexus::shape2D::Rectangle source;      ///< Texture source rectangle
-        nexus::shape2D::AABB bounds;           ///< Min = Left-Top border offset | Max = Right-Bottom border offset
+        nexus::shape2D::Rectangle source;   ///< Texture source rectangle
+        nexus::shape2D::AABB bounds;        ///< Min = Left-Top border offset | Max = Right-Bottom border offset
         Layout layout;                      ///< Layout of the n-patch: 3x3, 1x3, or 3x1
 
         /**
@@ -49,7 +49,7 @@ namespace _ext_gfx_gapi_impl {
          * @param bounds The border offsets (Min = Left-Top, Max = Right-Bottom).
          * @param layout The layout type of the Nine Patch (default is 3x3).
          */
-        NinePatchInfo(const nexus::shape2D::Rectangle& source, const nexus::shape2D::AABB& bounds = {}, Layout layout = Layout::NinePatch)
+        constexpr NinePatchInfo(const nexus::shape2D::Rectangle& source, const nexus::shape2D::AABB& bounds = {}, Layout layout = Layout::NinePatch)
         : source(source), bounds(bounds), layout(layout)
         { }
 
@@ -62,7 +62,7 @@ namespace _ext_gfx_gapi_impl {
          * @param bottom Bottom border offset.
          * @param layout The layout type of the Nine Patch (default is 3x3).
          */
-        NinePatchInfo(const nexus::shape2D::Rectangle& source, int left, int top, int right, int bottom, Layout layout = Layout::NinePatch)
+        constexpr NinePatchInfo(const nexus::shape2D::Rectangle& source, int left, int top, int right, int bottom, Layout layout = Layout::NinePatch)
         : source(source), bounds(left, top, right, bottom), layout(layout)
         { }
 
@@ -76,7 +76,7 @@ namespace _ext_gfx_gapi_impl {
          * @param tint Tint color for the Nine Patch texture (default is White).
          */
         template <typename T_Texture>
-        void Draw(const T_Texture& texture, const nexus::shape2D::RectangleF& dest, const nexus::math::Vec2& origin = { 0, 0 }, float rotation = 0.0f, const nexus::gfx::Color& tint = nexus::gfx::White)
+        void Draw(const T_Texture& texture, const nexus::shape2D::RectangleF& dest, const nexus::math::Vec2& origin = { 0, 0 }, float rotation = 0.0f, const nexus::gfx::Color& tint = nexus::gfx::White) const
         {
             static_assert(nexus::utils::IsContainer<T_Texture>::value, "<T_Texture> must be derived from a contextual container.");
             texture->DrawNinePatch(*this, dest, origin, rotation, tint);
