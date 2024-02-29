@@ -590,9 +590,15 @@ namespace _audio_impl {
         {
             if (!this->effect.has_value() || &(this->effect.value()) != &effect)
             {
-                // TODO: Add context check
-                alSource3i(source, AL_AUXILIARY_SEND_FILTER, effect->GetSlot(), effect->GetID(), 0);
-                this->effect = effect;
+                if (&this->ctx == &effect.GetContext())
+                {
+                    alSource3i(source, AL_AUXILIARY_SEND_FILTER, effect->GetSlot(), effect->GetID(), 0);
+                    this->effect = effect;
+                }
+                else
+                {
+                    NEXUS_LOG(Warning) << "[AL] Unattached effect, source and effect must have the same OpenAL context\n";
+                }
             }
         }
 
