@@ -257,6 +257,26 @@ namespace nexus { namespace core {
         }
 
         /**
+         * @brief Get the number of supported display modes for a specific monitor.
+         *
+         * This static function retrieves the number of supported display modes for a specific monitor.
+         * Specify the index of the monitor using the displayIndex parameter.
+         * Use this method when you need to know how many display modes are supported by a specific monitor.
+         *
+         * @param displayIndex The index of the monitor to retrieve the number of display modes from.
+         * @return The number of supported display modes for the specified monitor.
+         */
+        static int GetNumDisplayModes(int displayIndex)
+        {
+            int result = 0;
+            if (SDL_GetNumDisplayModes(displayIndex) < 0)
+            {
+                NEXUS_LOG(Warning) << "[SDL] " << SDL_GetError();
+            }
+            return result;
+        }
+
+        /**
          * @brief Get a supported display mode of a specific monitor.
          *
          * This static function retrieves a supported display mode of a specific monitor.
@@ -444,6 +464,16 @@ namespace nexus { namespace core {
         float GetAspect() const;
 
         /**
+         * @brief Get the number of supported display modes for the current monitor.
+         *
+         * This function retrieves the number of supported display modes for the current monitor.
+         * Use this method when you need to know how many display modes are supported by the current monitor.
+         *
+         * @return The number of supported display modes for the current monitor.
+         */
+        int GetNumDisplayModes() const;
+
+        /**
          * @brief Get a supported display mode of the current monitor.
          *
          * This function retrieves a supported display mode of the current monitor.
@@ -454,7 +484,7 @@ namespace nexus { namespace core {
          * @param modeIndex The index of the supported display mode to retrieve.
          * @return The display mode of the current monitor as a DisplayMode object.
          */
-        DisplayMode GetDisplayMode(int modeIndex);
+        DisplayMode GetDisplayMode(int modeIndex) const;
 
         /**
          * @brief Get the current display mode of the window.
