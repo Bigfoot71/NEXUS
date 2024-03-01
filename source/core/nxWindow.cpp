@@ -121,9 +121,19 @@ float core::Window::GetAspect() const
     return (s.x > s.y) ? s.x / s.y : s.x / s.y;
 }
 
-core::DisplayMode core::Window::GetDisplayMode() const
+core::DisplayMode core::Window::GetDisplayMode(int modeIndex)
 {
-    DisplayMode displayMode;
+    core::DisplayMode displayMode{};
+    if (SDL_GetDisplayMode(this->GetMonitor(), modeIndex, &displayMode) < 0)
+    {
+        NEXUS_LOG(Warning) << "[SDL] " << SDL_GetError();
+    }
+    return displayMode;
+}
+
+core::DisplayMode core::Window::GetCurrentDisplayMode() const
+{
+    DisplayMode displayMode{};
     if (SDL_GetWindowDisplayMode(window, &displayMode) < 0)
     {
         NEXUS_LOG(Warning) << "[SDL] " << SDL_GetError();

@@ -226,11 +226,14 @@ namespace nexus { namespace core {
         return !(a == b);
     }
 
-
-
+    /**
+     * @brief Alias for SDL_DisplayMode.
+     *
+     * DisplayMode is an alias for the SDL_DisplayMode structure provided by SDL.
+     * It represents the display mode information such as width, height, refresh rate, and pixel format.
+     * Use this alias to conveniently refer to the SDL_DisplayMode structure.
+     */
     using DisplayMode = SDL_DisplayMode;
-
-
 
     /**
      * @brief The Window class represents an SDL window.
@@ -243,14 +246,37 @@ namespace nexus { namespace core {
 
       public:
         /**
-        * @brief Get the count of open windows.
-        *
-        * This static method allows you to retrieve the current count of open windows.
-        * @return The count of open windows.
-        */
+         * @brief Get the count of open windows.
+         *
+         * This static method allows you to retrieve the current count of open windows.
+         * @return The count of open windows.
+         */
         static Uint32 GetCount()
         {
             return windowCount;
+        }
+
+        /**
+         * @brief Get a supported display mode of a specific monitor.
+         *
+         * This static function retrieves a supported display mode of a specific monitor.
+         * The display mode includes information such as width, height, refresh rate, and pixel format.
+         * Specify the index of the monitor using the displayIndex parameter,
+         * and the index of the mode you want to retrieve using the modeIndex parameter.
+         * Use this method when you need detailed information about a specific display mode on a specific monitor.
+         *
+         * @param displayIndex The index of the monitor to retrieve the display mode from.
+         * @param modeIndex The index of the supported display mode to retrieve.
+         * @return The display mode of the specified monitor as a DisplayMode object.
+         */
+        static DisplayMode GetDisplayMode(int displayIndex, int modeIndex)
+        {
+            DisplayMode displayMode{};
+            if (SDL_GetDisplayMode(displayIndex, modeIndex, &displayMode) < 0)
+            {
+                NEXUS_LOG(Warning) << "[SDL] " << SDL_GetError();
+            }
+            return displayMode;
         }
 
       public:
@@ -418,7 +444,20 @@ namespace nexus { namespace core {
         float GetAspect() const;
 
         /**
-         * @brief Get the display mode of the window.
+         * @brief Get a supported display mode of the current monitor.
+         *
+         * This function retrieves a supported display mode of the current monitor.
+         * The display mode includes information such as width, height, refresh rate, and pixel format.
+         * Specify the index of the mode you want to retrieve using the modeIndex parameter.
+         * Use this method when you need detailed information about a specific display mode.
+         *
+         * @param modeIndex The index of the supported display mode to retrieve.
+         * @return The display mode of the current monitor as a DisplayMode object.
+         */
+        DisplayMode GetDisplayMode(int modeIndex);
+
+        /**
+         * @brief Get the current display mode of the window.
          *
          * This function retrieves the display mode of the window when it is visible at fullscreen.
          * The display mode includes information such as width, height, refresh rate, and pixel format.
@@ -426,7 +465,7 @@ namespace nexus { namespace core {
          *
          * @return The display mode of the window as a DisplayMode object.
          */
-        DisplayMode GetDisplayMode() const;
+        DisplayMode GetCurrentDisplayMode() const;
 
         /**
          * @brief Get the gfx::Surface associated with the window.
