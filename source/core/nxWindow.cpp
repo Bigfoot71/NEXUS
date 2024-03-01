@@ -126,7 +126,7 @@ int core::Window::GetNumDisplayModes() const
     int result = 0;
     if (SDL_GetNumDisplayModes(this->GetMonitor()) < 0)
     {
-        NEXUS_LOG(Warning) << "[SDL] " << SDL_GetError();
+        NEXUS_LOG(Warning) << "[SDL] " << SDL_GetError() << "\n";
     }
     return result;
 }
@@ -136,7 +136,7 @@ core::DisplayMode core::Window::GetDisplayMode(int modeIndex) const
     core::DisplayMode displayMode{};
     if (SDL_GetDisplayMode(this->GetMonitor(), modeIndex, &displayMode) < 0)
     {
-        NEXUS_LOG(Warning) << "[SDL] " << SDL_GetError();
+        NEXUS_LOG(Warning) << "[SDL] " << SDL_GetError() << "\n";
     }
     return displayMode;
 }
@@ -146,7 +146,7 @@ core::DisplayMode core::Window::GetDesktopDisplayMode() const
     DisplayMode displayMode{};
     if (SDL_GetDesktopDisplayMode(this->GetMonitor(), &displayMode) < 0)
     {
-        NEXUS_LOG(Warning) << "[SDL] " << SDL_GetError();
+        NEXUS_LOG(Warning) << "[SDL] " << SDL_GetError() << "\n";
     }
     return displayMode;
 }
@@ -156,7 +156,7 @@ core::DisplayMode core::Window::GetCurrentDisplayMode() const
     DisplayMode displayMode{};
     if (SDL_GetCurrentDisplayMode(this->GetMonitor(), &displayMode) < 0)
     {
-        NEXUS_LOG(Warning) << "[SDL] " << SDL_GetError();
+        NEXUS_LOG(Warning) << "[SDL] " << SDL_GetError() << "\n";
     }
     return displayMode;
 }
@@ -166,7 +166,7 @@ core::DisplayMode core::Window::GetWindowDisplayMode() const
     DisplayMode displayMode{};
     if (SDL_GetWindowDisplayMode(window, &displayMode) < 0)
     {
-        NEXUS_LOG(Warning) << "[SDL] " << SDL_GetError();
+        NEXUS_LOG(Warning) << "[SDL] " << SDL_GetError() << "\n";
     }
     return displayMode;
 }
@@ -213,14 +213,14 @@ void core::Window::ToggleFullscreen()
     {
         if (SDL_SetWindowFullscreen(window, 0) < 0)
         {
-            NEXUS_LOG(Warning) << "[SDL] " << SDL_GetError();
+            NEXUS_LOG(Warning) << "[SDL] " << SDL_GetError() << "\n";
         }
     }
     else
     {
         if (SDL_SetWindowFullscreen(window, SDL_WINDOW_FULLSCREEN) < 0)
         {
-            NEXUS_LOG(Warning) << "[SDL] " << SDL_GetError();
+            NEXUS_LOG(Warning) << "[SDL] " << SDL_GetError() << "\n";
         }
     }
 }
@@ -233,14 +233,14 @@ void core::Window::ToggleFullscreenDesktop()
     {
         if (SDL_SetWindowFullscreen(window, 0) < 0)
         {
-            NEXUS_LOG(Warning) << "[SDL] " << SDL_GetError();
+            NEXUS_LOG(Warning) << "[SDL] " << SDL_GetError() << "\n";
         }
     }
     else
     {
         if (SDL_SetWindowFullscreen(window, SDL_WINDOW_FULLSCREEN_DESKTOP) < 0)
         {
-            NEXUS_LOG(Warning) << "[SDL] " << SDL_GetError();
+            NEXUS_LOG(Warning) << "[SDL] " << SDL_GetError() << "\n";
         }
     }
 }
@@ -259,6 +259,6 @@ void core::Window::SetDisplayMode(const DisplayMode& mode)
 {
     if (SDL_SetWindowDisplayMode(window, &mode) < 0)
     {
-        NEXUS_LOG(Warning) << "[SDL] " << SDL_GetError();
+        NEXUS_LOG(Warning) << "[SDL] " << SDL_GetError() << "\n";
     }
 }

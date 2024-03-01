@@ -272,7 +272,7 @@ namespace nexus { namespace core {
 
             if (result < 0)
             {
-                NEXUS_LOG(Warning) << "[SDL] " << SDL_GetError();
+                NEXUS_LOG(Warning) << "[SDL] " << SDL_GetError() << "\n";
             }
 
             return result;
@@ -297,7 +297,7 @@ namespace nexus { namespace core {
             int result = 0;
             if (SDL_GetNumDisplayModes(displayIndex) < 0)
             {
-                NEXUS_LOG(Warning) << "[SDL] " << SDL_GetError();
+                NEXUS_LOG(Warning) << "[SDL] " << SDL_GetError() << "\n";
             }
             return result;
         }
@@ -327,7 +327,7 @@ namespace nexus { namespace core {
             DisplayMode displayMode{};
             if (SDL_GetDisplayMode(displayIndex, modeIndex, &displayMode) < 0)
             {
-                NEXUS_LOG(Warning) << "[SDL] " << SDL_GetError();
+                NEXUS_LOG(Warning) << "[SDL] " << SDL_GetError() << "\n";
             }
             return displayMode;
         }
@@ -355,7 +355,7 @@ namespace nexus { namespace core {
             DisplayMode displayMode{};
             if (SDL_GetDesktopDisplayMode(displayIndex, &displayMode) < 0)
             {
-                NEXUS_LOG(Warning) << "[SDL] " << SDL_GetError();
+                NEXUS_LOG(Warning) << "[SDL] " << SDL_GetError() << "\n";
             }
             return displayMode;
         }
@@ -383,7 +383,7 @@ namespace nexus { namespace core {
             DisplayMode displayMode{};
             if (SDL_GetCurrentDisplayMode(displayIndex, &displayMode) < 0)
             {
-                NEXUS_LOG(Warning) << "[SDL] " << SDL_GetError();
+                NEXUS_LOG(Warning) << "[SDL] " << SDL_GetError() << "\n";
             }
             return displayMode;
         }
@@ -396,7 +396,7 @@ namespace nexus { namespace core {
          * you to create the window later using the Create() method.
          */
         Window();
-      
+
         /**
          * @brief Constructor to create a Window object.
          *
