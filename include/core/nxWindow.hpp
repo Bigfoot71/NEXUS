@@ -552,6 +552,17 @@ namespace nexus { namespace core {
          */
         float GetAspect() const;
 
+        /**
+         * @brief Retrieves the number of available display modes for the monitor containing this window.
+         *
+         * This function returns the number of available display modes (resolutions and refresh rates) for the
+         * monitor on which this window is currently located.
+         *
+         * @return The number of available display modes for the monitor containing this window.
+         * Returns a negative value if an error occurs, in which case, an error message will also be logged.
+         * 
+         * @note This function is non-static and requires an instance of the Window class to be called.
+         */
         int GetNumDisplayModes() const;
 
         /**
