@@ -739,6 +739,84 @@ namespace nexus { namespace core {
         {
             SDL_SetWindowTitle(window, title.c_str());
         }
+
+        /**
+         * @brief Sets whether the mouse is grabbed by the window.
+         *
+         * This function sets whether the mouse is grabbed by the window.
+         * When the mouse is grabbed, it is confined to the window's area.
+         *
+         * @param grabbed A boolean value indicating whether to grab the mouse.
+         * True to grab the mouse, false to release it.
+         * 
+         * @note This function is non-static and requires an instance of the Window class to be called.
+         */
+        void SetGrab(bool grabbed) const
+        {
+            SDL_SetWindowGrab(window, static_cast<SDL_bool>(grabbed));
+        }
+
+        /**
+         * @brief Hides the window.
+         *
+         * This function hides the window from the user's view.
+         * The window will no longer be visible on the screen.
+         * 
+         * @note This function is non-static and requires an instance of the Window class to be called.
+         */
+        void Hide() const
+        {
+            SDL_HideWindow(window);
+        }
+
+        /**
+         * @brief Shows the window.
+         *
+         * This function makes the window visible to the user.
+         * The window will be displayed on the screen.
+         * 
+         * @note This function is non-static and requires an instance of the Window class to be called.
+         */
+        void Show() const
+        {
+            SDL_ShowWindow(window);
+        }
+
+        /**
+         * @brief Raises the window.
+         *
+         * This function brings the window to the front, making it the top-most window.
+         * 
+         * @note This function is non-static and requires an instance of the Window class to be called.
+         */
+        void Raise() const
+        {
+            SDL_RaiseWindow(window);
+        }
+
+        /**
+         * @brief Minimizes the window.
+         *
+         * This function minimizes the window, hiding it from the user's view.
+         * 
+         * @note This function is non-static and requires an instance of the Window class to be called.
+         */
+        void Minimize() const
+        {
+            SDL_MinimizeWindow(window);
+        }
+
+        /**
+         * @brief Maximizes the window.
+         *
+         * This function maximizes the window, making it take up the entire screen.
+         * 
+         * @note This function is non-static and requires an instance of the Window class to be called.
+         */
+        void Maximize() const
+        {
+            SDL_MaximizeWindow(window);
+        }
     };
 
 }}
