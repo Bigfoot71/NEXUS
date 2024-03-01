@@ -141,7 +141,27 @@ core::DisplayMode core::Window::GetDisplayMode(int modeIndex) const
     return displayMode;
 }
 
+core::DisplayMode core::Window::GetDesktopDisplayMode() const
+{
+    DisplayMode displayMode{};
+    if (SDL_GetDesktopDisplayMode(this->GetMonitor(), &displayMode) < 0)
+    {
+        NEXUS_LOG(Warning) << "[SDL] " << SDL_GetError();
+    }
+    return displayMode;
+}
+
 core::DisplayMode core::Window::GetCurrentDisplayMode() const
+{
+    DisplayMode displayMode{};
+    if (SDL_GetCurrentDisplayMode(this->GetMonitor(), &displayMode) < 0)
+    {
+        NEXUS_LOG(Warning) << "[SDL] " << SDL_GetError();
+    }
+    return displayMode;
+}
+
+core::DisplayMode core::Window::GetWindowDisplayMode() const
 {
     DisplayMode displayMode{};
     if (SDL_GetWindowDisplayMode(window, &displayMode) < 0)

@@ -257,14 +257,40 @@ namespace nexus { namespace core {
         }
 
         /**
-         * @brief Get the number of supported display modes for a specific monitor.
+         * @brief Retrieves the number of available video displays.
          *
-         * This static function retrieves the number of supported display modes for a specific monitor.
-         * Specify the index of the monitor using the displayIndex parameter.
-         * Use this method when you need to know how many display modes are supported by a specific monitor.
+         * This function returns the number of available video displays connected to the system.
          *
-         * @param displayIndex The index of the monitor to retrieve the number of display modes from.
-         * @return The number of supported display modes for the specified monitor.
+         * @return The number of available video displays. Returns a negative value if an error occurs,
+         * in which case, an error message will also be logged.
+         * 
+         * @note This function is static and does not require an instance of the Window class to be called.
+         */
+        static int GetNumMonitors()
+        {
+            int result = SDL_GetNumVideoDisplays();
+
+            if (result < 0)
+            {
+                NEXUS_LOG(Warning) << "[SDL] " << SDL_GetError();
+            }
+
+            return result;
+        }
+
+        /**
+         * @brief Retrieves the number of available display modes for a specified monitor.
+         *
+         * This function returns the number of available display modes (resolutions and refresh rates)
+         * for the monitor identified by the provided display index.
+         *
+         * @param displayIndex The index of the monitor for which to retrieve the available display modes.
+         * It must be in the range from 0 to Window::GetNumMonitors() - 1.
+         * 
+         * @return The number of available display modes for the specified monitor. 
+         * Returns a negative value if an error occurs, in which case, an error message will also be logged.
+         * 
+         * @note This function is static and does not require an instance of the Window class to be called.
          */
         static int GetNumDisplayModes(int displayIndex)
         {
@@ -277,22 +303,85 @@ namespace nexus { namespace core {
         }
 
         /**
-         * @brief Get a supported display mode of a specific monitor.
+         * @brief Retrieves information about a specific display mode for a specified monitor.
          *
-         * This static function retrieves a supported display mode of a specific monitor.
-         * The display mode includes information such as width, height, refresh rate, and pixel format.
-         * Specify the index of the monitor using the displayIndex parameter,
-         * and the index of the mode you want to retrieve using the modeIndex parameter.
-         * Use this method when you need detailed information about a specific display mode on a specific monitor.
+         * This function retrieves information about a specific display mode (resolution, refresh rate, etc.)
+         * for the monitor identified by the provided display index and mode index.
          *
-         * @param displayIndex The index of the monitor to retrieve the display mode from.
-         * @param modeIndex The index of the supported display mode to retrieve.
-         * @return The display mode of the specified monitor as a DisplayMode object.
+         * @param displayIndex The index of the monitor for which to retrieve the display mode information.
+         * It must be in the range from 0 to Window::GetNumMonitors() - 1.
+         * 
+         * @param modeIndex The index of the display mode to retrieve information about. Display modes are sorted
+         * based on width, height, bits per pixel, packed pixel layout, and refresh rate. This index must be in
+         * the range of available display modes for the specified monitor (0 to Window::GetNumDisplayModes(displayIndex) - 1).
+         * 
+         * @return A DisplayMode structure containing information about the specified display mode.
+         * If an error occurs, the returned DisplayMode structure will be empty, and an error message will be logged.
+         * 
+         * @note This function is static and does not require an instance of the Window class to be called.
+         * The display modes are sorted based on width (largest to smallest), height (largest to smallest),
+         * bits per pixel (more colors to fewer colors), packed pixel layout (largest to smallest), and refresh rate (highest to lowest).
          */
         static DisplayMode GetDisplayMode(int displayIndex, int modeIndex)
         {
             DisplayMode displayMode{};
             if (SDL_GetDisplayMode(displayIndex, modeIndex, &displayMode) < 0)
+            {
+                NEXUS_LOG(Warning) << "[SDL] " << SDL_GetError();
+            }
+            return displayMode;
+        }
+
+        /**
+         * @brief Retrieves information about the desktop's display mode for a specified monitor.
+         *
+         * This function retrieves information about the desktop's display mode (resolution, refresh rate, etc.)
+         * for the monitor identified by the provided display index. Unlike Window::GetCurrentDisplayMode(),
+         * which returns the current display mode regardless of fullscreen changes, this function returns the
+         * previous native display mode when SDL runs fullscreen and has changed the resolution.
+         *
+         * @param displayIndex The index of the monitor for which to retrieve the desktop's display mode information.
+         * It must be in the range from 0 to Window::GetNumMonitors() - 1.
+         * 
+         * @return A DisplayMode structure containing information about the desktop's display mode.
+         * If an error occurs, the returned DisplayMode structure will be empty, and an error message will be logged.
+         * 
+         * @note This function is static and does not require an instance of the Window class to be called.
+         * This function is useful for retrieving the desktop's display mode, especially in cases where SDL runs
+         * fullscreen and has changed the resolution.
+         */
+        static DisplayMode GetDesktopDisplayMode(int displayIndex)
+        {
+            DisplayMode displayMode{};
+            if (SDL_GetDesktopDisplayMode(displayIndex, &displayMode) < 0)
+            {
+                NEXUS_LOG(Warning) << "[SDL] " << SDL_GetError();
+            }
+            return displayMode;
+        }
+
+        /**
+         * @brief Retrieves information about the current display mode for a specified monitor.
+         *
+         * This function retrieves information about the current display mode (resolution, refresh rate, etc.)
+         * for the monitor identified by the provided display index. Unlike Window::GetDesktopDisplayMode(),
+         * which returns the previous native display mode when SDL runs fullscreen and has changed the resolution,
+         * this function returns the current display mode in such cases.
+         *
+         * @param displayIndex The index of the monitor for which to retrieve the current display mode information.
+         * It must be in the range from 0 to Window::GetNumMonitors() - 1.
+         * 
+         * @return A DisplayMode structure containing information about the current display mode.
+         * If an error occurs, the returned DisplayMode structure will be empty, and an error message will be logged.
+         * 
+         * @note This function is static and does not require an instance of the Window class to be called.
+         * This function is useful for retrieving the current display mode, especially in cases where SDL runs
+         * fullscreen and has changed the resolution.
+         */
+        static DisplayMode GetCurrentDisplayMode(int displayIndex)
+        {
+            DisplayMode displayMode{};
+            if (SDL_GetCurrentDisplayMode(displayIndex, &displayMode) < 0)
             {
                 NEXUS_LOG(Warning) << "[SDL] " << SDL_GetError();
             }
@@ -463,39 +552,75 @@ namespace nexus { namespace core {
          */
         float GetAspect() const;
 
-        /**
-         * @brief Get the number of supported display modes for the current monitor.
-         *
-         * This function retrieves the number of supported display modes for the current monitor.
-         * Use this method when you need to know how many display modes are supported by the current monitor.
-         *
-         * @return The number of supported display modes for the current monitor.
-         */
         int GetNumDisplayModes() const;
 
         /**
-         * @brief Get a supported display mode of the current monitor.
+         * @brief Retrieves information about a specific display mode for the monitor containing this window.
          *
-         * This function retrieves a supported display mode of the current monitor.
-         * The display mode includes information such as width, height, refresh rate, and pixel format.
-         * Specify the index of the mode you want to retrieve using the modeIndex parameter.
-         * Use this method when you need detailed information about a specific display mode.
+         * This function retrieves information about a specific display mode (resolution, refresh rate, etc.)
+         * for the monitor on which this window is currently located.
          *
-         * @param modeIndex The index of the supported display mode to retrieve.
-         * @return The display mode of the current monitor as a DisplayMode object.
+         * @param modeIndex The index of the display mode to retrieve information about. Display modes are sorted
+         * based on width, height, bits per pixel, packed pixel layout, and refresh rate. This index must be in
+         * the range of available display modes for the monitor.
+         * 
+         * @return A DisplayMode structure containing information about the specified display mode.
+         * If an error occurs, the returned DisplayMode structure will be empty, and an error message will be logged.
+         * 
+         * @note This function is non-static and requires an instance of the Window class to be called.
+         * The display modes are sorted based on width (largest to smallest), height (largest to smallest),
+         * bits per pixel (more colors to fewer colors), packed pixel layout (largest to smallest), and refresh rate (highest to lowest).
          */
         DisplayMode GetDisplayMode(int modeIndex) const;
 
         /**
-         * @brief Get the current display mode of the window.
+         * @brief Retrieves information about the desktop's display mode for the monitor containing this window.
          *
-         * This function retrieves the display mode of the window when it is visible at fullscreen.
-         * The display mode includes information such as width, height, refresh rate, and pixel format.
-         * Use this method when you need detailed information about the display mode.
+         * This function retrieves information about the desktop's display mode (resolution, refresh rate, etc.)
+         * for the monitor on which this window is currently located. Unlike Window::GetCurrentDisplayMode(),
+         * which returns the previous native display mode when SDL runs fullscreen and has changed the resolution,
+         * this function returns the desktop's display mode even in fullscreen mode.
          *
-         * @return The display mode of the window as a DisplayMode object.
+         * @return A DisplayMode structure containing information about the desktop's display mode.
+         * If an error occurs, the returned DisplayMode structure will be empty, and an error message will be logged.
+         * 
+         * @note This function is non-static and requires an instance of the Window class to be called.
+         * This function is useful for retrieving the desktop's display mode, especially in cases where SDL runs
+         * fullscreen and has changed the resolution.
+         */
+        DisplayMode GetDesktopDisplayMode() const;
+
+        /**
+         * @brief Retrieves information about the current display mode for the monitor containing this window.
+         *
+         * This function retrieves information about the current display mode (resolution, refresh rate, etc.)
+         * for the monitor on which this window is currently located. Unlike Window::GetDesktopDisplayMode(),
+         * which returns the previous native display mode when SDL runs fullscreen and has changed the resolution,
+         * this function returns the current display mode even in fullscreen mode.
+         *
+         * @return A DisplayMode structure containing information about the current display mode.
+         * If an error occurs, the returned DisplayMode structure will be empty, and an error message will be logged.
+         * 
+         * @note This function is non-static and requires an instance of the Window class to be called.
+         * This function is useful for retrieving the current display mode, especially in cases where SDL runs
+         * fullscreen and has changed the resolution.
          */
         DisplayMode GetCurrentDisplayMode() const;
+
+        /**
+         * @brief Retrieves information about the current display mode of the monitor containing this window.
+         *
+         * This function retrieves information about the current display mode (resolution, refresh rate, etc.)
+         * of the monitor on which this window is currently located.
+         *
+         * @return A DisplayMode structure containing information about the current display mode of the monitor
+         * containing this window. If an error occurs, the returned DisplayMode structure will be empty, and an
+         * error message will be logged.
+         * 
+         * @note This function is non-static and requires an instance of the Window class to be called.
+         * This function is useful for retrieving the display mode of the monitor containing this window.
+         */
+        DisplayMode GetWindowDisplayMode() const;
 
         /**
          * @brief Get the gfx::Surface associated with the window.
