@@ -525,6 +525,26 @@ namespace nexus { namespace core {
         int GetHeight() const;
 
         /**
+         * @brief Get the width of the window as a floating-point value.
+         *
+         * @return The width of the window as a float.
+         */
+        float GetWidthF() const
+        {
+            return static_cast<float>(this->GetWidth());
+        }
+
+        /**
+         * @brief Get the height of the window as a floating-point value.
+         *
+         * @return The height of the window as a float.
+         */
+        float GetHeightF() const
+        {
+            return static_cast<float>(this->GetHeight());
+        }
+
+        /**
          * @brief Get the size of the window as a math::IVec2 object.
          *
          * @return The window size as a math::IVec2.
