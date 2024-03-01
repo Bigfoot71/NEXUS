@@ -226,6 +226,12 @@ namespace nexus { namespace core {
         return !(a == b);
     }
 
+
+
+    using DisplayMode = SDL_DisplayMode;
+
+
+
     /**
      * @brief The Window class represents an SDL window.
      */
@@ -412,6 +418,17 @@ namespace nexus { namespace core {
         float GetAspect() const;
 
         /**
+         * @brief Get the display mode of the window.
+         *
+         * This function retrieves the display mode of the window when it is visible at fullscreen.
+         * The display mode includes information such as width, height, refresh rate, and pixel format.
+         * Use this method when you need detailed information about the display mode.
+         *
+         * @return The display mode of the window as a DisplayMode object.
+         */
+        DisplayMode GetDisplayMode() const;
+
+        /**
          * @brief Get the gfx::Surface associated with the window.
          *
          * A new surface will be created with the optimal format for the window, if
@@ -479,6 +496,17 @@ namespace nexus { namespace core {
          * @param height The new height of the window.
          */
         void SetSize(Uint32 width, Uint32 height);
+
+        /**
+         * @brief Set the display mode of the window.
+         *
+         * This function sets the display mode of the window when it is visible at fullscreen.
+         * The display mode includes information such as width, height, refresh rate, and pixel format.
+         * Use this method to set the desired display mode for the window.
+         *
+         * @param mode The display mode to set for the window.
+         */
+        void SetDisplayMode(const DisplayMode& mode);
 
         /**
          * @brief Set the window icon from a graphics surface.

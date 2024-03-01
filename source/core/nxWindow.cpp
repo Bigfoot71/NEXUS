@@ -18,7 +18,7 @@
  */
 
 #include "core/nxWindow.hpp"
-#include "SDL_video.h"
+#include <SDL_video.h>
 #include <SDL.h>
 
 using namespace nexus;
@@ -32,7 +32,11 @@ core::Window::Window()
 
     if (!SDL_WasInit(SDL_INIT_VIDEO))
     {
-        SDL_InitSubSystem(SDL_INIT_VIDEO);
+        if (SDL_InitSubSystem(SDL_INIT_VIDEO) < 0)
+        {
+            throw core::NexusException("core::Window", "Initialization of the video subsystem failed.",
+                "SDL", SDL_GetError());
+        }
     }
 }
 
@@ -43,7 +47,11 @@ core::Window::Window(const std::string& title, Uint32 width, Uint32 height, Wind
 
     if (!SDL_WasInit(SDL_INIT_VIDEO))
     {
-        SDL_InitSubSystem(SDL_INIT_VIDEO);
+        if (SDL_InitSubSystem(SDL_INIT_VIDEO) < 0)
+        {
+            throw core::NexusException("core::Window", "Initialization of the video subsystem failed.",
+                "SDL", SDL_GetError());
+        }
     }
 
     Create(title, width, height, flags);
@@ -113,6 +121,16 @@ float core::Window::GetAspect() const
     return (s.x > s.y) ? s.x / s.y : s.x / s.y;
 }
 
+core::DisplayMode core::Window::GetDisplayMode() const
+{
+    DisplayMode displayMode;
+    if (SDL_GetWindowDisplayMode(window, &displayMode) < 0)
+    {
+        NEXUS_LOG(Warning) << "[SDL] " << SDL_GetError();
+    }
+    return displayMode;
+}
+
 gfx::Surface core::Window::GetSurface()
 {
     SDL_Surface *surface = SDL_GetWindowSurface(window);
@@ -153,11 +171,17 @@ void core::Window::ToggleFullscreen()
 
     if (IsState(WindowFlag::Fullscreen))
     {
-        SDL_SetWindowFullscreen(window, 0);
+        if (SDL_SetWindowFullscreen(window, 0) < 0)
+        {
+            NEXUS_LOG(Warning) << "[SDL] " << SDL_GetError();
+        }
     }
     else
     {
-        SDL_SetWindowFullscreen(window, SDL_WINDOW_FULLSCREEN);
+        if (SDL_SetWindowFullscreen(window, SDL_WINDOW_FULLSCREEN) < 0)
+        {
+            NEXUS_LOG(Warning) << "[SDL] " << SDL_GetError();
+        }
     }
 }
 
@@ -167,11 +191,17 @@ void core::Window::ToggleFullscreenDesktop()
 
     if (IsState(WindowFlag::FullscreenDesktop))
     {
-        SDL_SetWindowFullscreen(window, 0);
+        if (SDL_SetWindowFullscreen(window, 0) < 0)
+        {
+            NEXUS_LOG(Warning) << "[SDL] " << SDL_GetError();
+        }
     }
     else
     {
-        SDL_SetWindowFullscreen(window, SDL_WINDOW_FULLSCREEN_DESKTOP);
+        if (SDL_SetWindowFullscreen(window, SDL_WINDOW_FULLSCREEN_DESKTOP) < 0)
+        {
+            NEXUS_LOG(Warning) << "[SDL] " << SDL_GetError();
+        }
     }
 }
 
@@ -183,4 +213,12 @@ void core::Window::SetPosition(Uint32 x, Uint32 y)
 void core::Window::SetSize(Uint32 width, Uint32 height)
 {
     SDL_SetWindowSize(window, width, height);
+}
+
+void core::Window::SetDisplayMode(const DisplayMode& mode)
+{
+    if (SDL_SetWindowDisplayMode(window, &mode) < 0)
+    {
+        NEXUS_LOG(Warning) << "[SDL] " << SDL_GetError();
+    }
 }
