@@ -147,3 +147,5 @@ void _gl_impl::TargetTexture::DrawBillboard(const gl::Camera3D& camera, const sh
 {
     texture.DrawBillboard(camera, source, position, size, tint);
 }
+
+

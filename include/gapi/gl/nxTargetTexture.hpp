@@ -164,6 +164,33 @@ namespace _gl_impl
         void DrawBillboard(const nexus::gl::Camera3D& camera, const nexus::shape2D::Rectangle& source, const nexus::math::Vec3& position, const nexus::math::Vec2& size, const nexus::gfx::Color& tint) const;
 
         /**
+         * @brief Set the texture wrapping mode.
+         * 
+         * This function sets how the texture should be sampled when texture coordinates
+         * fall outside the range [0, 1].
+         * 
+         * @param wrap The wrapping mode to set.
+         */
+        void SetWrap(Texture::Wrap wrap)
+        {
+            texture.SetWrap(wrap);
+        }
+
+        /**
+         * @brief Set the texture scaling filter mode.
+         * 
+         * This function sets the filtering mode used when sampling the texture at different
+         * scales. It considers mipmaps if available in the texture and sets the filter mode
+         * accordingly for minification and magnification.
+         * 
+         * @param filter The filtering mode to set.
+         */
+        void SetFilter(Texture::Filter filter)
+        {
+            texture.SetFilter(filter);
+        }
+
+        /**
          * @brief Checks if the target texture is active.
          * @return True if the target texture is active, false otherwise.
          */
