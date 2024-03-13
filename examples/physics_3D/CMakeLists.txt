@@ -6,7 +6,7 @@ link_libraries(nexus)
 
 add_executable(phys3D_basic basic.cpp)
 
-if(EXTENSION_3D)
+if(NEXUS_EXTENSION_3D)
     add_executable(phys3D_advanced_world advanced_world.cpp)
 endif()
 
