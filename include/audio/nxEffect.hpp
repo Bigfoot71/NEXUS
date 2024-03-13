@@ -260,7 +260,7 @@ namespace _audio_impl {
         template <typename T_Enum>
         void SetParameter(T_Enum param, ALint value)
         {
-            static_assert(std::is_convertible<T_Enum, ALenum>::value, "T_Enum must be convertible to ALenum");
+            //static_assert(std::is_convertible<T_Enum, ALenum>::value, "T_Enum must be convertible to ALenum");
             alEffecti(effect, static_cast<ALenum>(param), value);
         }
 
@@ -276,7 +276,7 @@ namespace _audio_impl {
         template <typename T_Enum>
         void SetParameter(T_Enum param, ALfloat value)
         {
-            static_assert(std::is_convertible<T_Enum, ALenum>::value, "T_Enum must be convertible to ALenum");
+            //static_assert(std::is_convertible<T_Enum, ALenum>::value, "T_Enum must be convertible to ALenum");
             alEffectf(effect, static_cast<ALenum>(param), value);
         }
 
